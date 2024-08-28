@@ -1,0 +1,21 @@
+# Use the official Node.js image as the base image
+FROM node:18-alpine
+
+# Install NASM (Netwide Assembler)
+RUN apk --no-cache add nasm
+
+# Set the working directory inside the container
+WORKDIR /usr/src/app
+
+# Copy the application code to the container
+COPY . .
+
+# Install dependencies
+RUN yarn cache clean
+
+# Install dependencies
+RUN yarn install
+
+
+# Start the application
+CMD ["yarn", "dev"]

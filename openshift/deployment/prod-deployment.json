@@ -1,0 +1,156 @@
+{
+  "apiVersion": "apps.openshift.io/v1",
+  "kind": "DeploymentConfig",
+  "metadata": {
+    "name": "dashboard-dg-front",
+    "labels": {
+      "app": "dashboard-dg-front",
+      "createdBy": "CoE-Team",
+      "env": "dsidashboarddg-prod",
+      "from": "jenkins-pipeline",
+      "template": "sonatel-docker-image",
+      "type": "react-app",
+      "version": "1.0"
+    }
+  },
+  "spec": {
+    "replicas": 2,
+    "strategy": {
+      "rollingParams": {
+        "intervalSeconds": 1,
+        "maxSurge": "25%",
+        "maxUnavailable": "25%",
+        "timeoutSeconds": 600,
+        "updatePeriodSeconds": 1
+      },
+      "type": "Rolling"
+    },
+    "selector": {},
+    "template": {
+      "metadata": {
+        "labels": {
+          "app": "dashboard-dg-front",
+          "createdBy": "CoE-Team",
+          "env": "dsidashboarddg-prod",
+          "from": "jenkins-pipeline",
+          "template": "sonatel-docker-image",
+          "type": "react-app",
+          "version": "1.0"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "name": "dashboard-dg-front",
+            "image": "registry.tools.orange-sonatel.com/dif/selfcare-rh/dashboard-dg-front:1.0",
+            "imagePullPolicy": "Always",
+            "ports": [
+              {
+                "containerPort": 80,
+                "protocol": "TCP",
+                "name": "80-tcp"
+              }
+            ],
+            "resources": {
+              "limits": {
+                "cpu": "1",
+                "memory": "1Gi"
+              },
+              "requests": {
+                "cpu": "100m",
+                "memory": "256Mi"
+              }
+            },
+            "env": [
+              {
+                "name": "NEXT_PUBLIC_BACKEND_BACKEND_URL",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "frontend",
+                    "key": "NEXT_PUBLIC_BACKEND_BACKEND_URL"
+                  }
+                }
+              },
+              {
+                "name": "NEXTAUTH_SECRET",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "frontend",
+                    "key": "NEXTAUTH_SECRET"
+                  }
+                }
+              },
+              {
+                "name": "KEYCLOAK_ID",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "frontend",
+                    "key": "KEYCLOAK_ID"
+                  }
+                }
+              },
+              {
+                "name": "KEYCLOAK_SECRET",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "frontend",
+                    "key": "KEYCLOAK_SECRET"
+                  }
+                }
+              },
+              {
+                "name": "KEYCLOAK_BASE_URL",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "frontend",
+                    "key": "KEYCLOAK_BASE_URL"
+                  }
+                }
+              },
+              {
+                "name": "KEYCLOAK_ISSUER",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "frontend",
+                    "key": "KEYCLOAK_ISSUER"
+                  }
+                }
+              },
+              {
+                "name": "KEYCLOAK_TOKEN_ENDPOINT",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "frontend",
+                    "key": "KEYCLOAK_TOKEN_ENDPOINT"
+                  }
+                }
+              },
+              {
+                "name": "KEYCLOAK_USERINFO",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "frontend",
+                    "key": "KEYCLOAK_USERINFO"
+                  }
+                }
+              },
+              {
+                "name": "KEYCLOAK_USER_REGISTER",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "frontend",
+                    "key": "KEYCLOAK_USER_REGISTER"
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "securityContext": {
+          "fsGroup": 0,
+          "runAsUser": 0
+        }
+      }
+    }
+  }
+}

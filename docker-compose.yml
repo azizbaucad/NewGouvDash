@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  # Next.js app service
+  app:
+    build:
+      context: . # Build context is the current directory
+      dockerfile: Dockerfile.dev # Use the Dockerfile you created
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./:/usr/src/app # Mount your local directory to the container
+      - /node_modules # Exclude node_modules to use container's modules

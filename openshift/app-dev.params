@@ -1,0 +1,5 @@
+APPLICATION_NAME=isc-dashboard-dg-front
+IMAGE_DOCKER_NAME=registry.tools.orange-sonatel.com/dif/isc/dashboard-dg-front
+PORT_APPLICATION_NUMBER=3000
+CPU=1000
+MEMORY=500
