@@ -19,4 +19,9 @@ module.exports = {
   gird: themeGirdItem,
   hightlightStatus: themeHightlightStatus,
   direction: themeDirection,
+  // Add the fonts here
+  /* fonts: {
+    heading: `'Roboto Mono', sans-serif`,
+    body: `'Roboto Mono', sans-serif`,
+  }, */
 };

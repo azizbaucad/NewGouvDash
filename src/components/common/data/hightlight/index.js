@@ -6,7 +6,7 @@ import { Fragment, useState } from 'react';
 export const HightlightHeader = ({ status }) => {
   return (
     <HStack alignItems={'left'} justifyContent={'space-between'}>
-      <Heading fontSize={16} ml={0}>
+      <Heading fontSize={16} color={'#000'} fontWeight={'800'} as={'text'} fontFamily="'Roboto Mono, sans-serif'">
         Objectifs Mensuels
       </Heading>
       <HStack spacing={1}>

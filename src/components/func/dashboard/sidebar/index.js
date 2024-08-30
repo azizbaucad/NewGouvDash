@@ -24,99 +24,59 @@ export const Sidebar = ({ activeLink }) => {
   const menus = [
     {
       name: 'Présidence',
-      icon: <AiFillHome fontSize={20} />,
-      active: 'home',
-      url: routes.pages.dashboard.initial,
+      /* icon: <AiFillHome fontSize={20} color='#9999ff' mt={2} />, */
+      active: 'null',
+      url: null,
+      subMenus: [
+        { name: 'SGPR', active: 'home', url: routes.pages.dashboard.initial },
+        { name: 'Cabinet', active: 'dv', url: routes.pages.dv.initial },
+        { name: 'Autres', active: 'desc', url: routes.pages.desc.initial },
+      ],
     },
     {
       name: 'Primature',
-      icon: <AiFillShop fontSize={20} />,
-      active: 'dmgp',
+      active: 'null',
       url: routes.pages.dmgp.initial,
+      subMenus: [
+        { name: 'Gouvernance', active: 'ofms', url: routes.pages.ofms.initial },
+        { name: 'Intérieur', active: 'dmgp', url: routes.pages.dmgp.initial },
+      ],
     },
-   /*  {
-      name: 'OFMS',
-      icon: <PiArrowsLeftRightBold fontSize={20} />,
-      active: 'ofms',
-      url: routes.pages.ofms.initial,
-    },
-    {
-      name: 'DESC',
-      icon: <BsPersonHeart fontSize={20} />,
-      active: 'desc',
-      url: routes.pages.desc.initial,
-    },
-    {
-      name: 'DV',
-      icon: <RiShakeHandsFill fontSize={20} />,
-      url: routes.pages.dv.initial,
-      active: 'dv',
-    },
-    {
-      name: 'DDE',
-      icon: <AiFillBank fontSize={20} />,
-      active: 'ddedmc',
-      url: routes.pages.ddedmc.initial,
-    },
-    {
-      name: 'DIGITAL',
-      icon: <AiFillAppstore fontSize={20} />,
-      active: 'digital',
-      url: routes.pages.digital.initial,
-    },
-    {
-      name: 'DRJ',
-      icon: <AiOutlineFileZip fontSize={20} />,
-      active: 'drj',
-      url: routes.pages.drj.initial,
-    },
-    {
-      name: 'DSI',
-      icon: <AiOutlineDesktop fontSize={20} />,
-      active: 'dsi',
-      url: routes.pages.dsi.initial,
-    },
-    {
-      name: 'DRH',
-      icon: <FaUser fontSize={20} />,
-      active: 'drh',
-      url: routes.pages.drh.initial,
-    }, */
-  
   ];
 
   return (
     <Box h={'100%'}>
-      <VStack
-        bg={colors.primary.gray}
-        gap={'none'}
-        justifyContent={'start'}
-        h={'100%'}
-        w={'5.95vw'}
-        position={'fixed'}
-      >
+      <VStack bg={colors.primary.gray} gap={'none'} alignItems={'center'} h={'100%'} w={'9.5vw'} position={'fixed'}>
         <VStack padding={2}>
-          <Box h={59} w={59} pos={'relative'} mb={1} mt={1}>
+          <Box h={59} w={59} pos={'relative'} mb={3} mt={1}>
             <Image {...images.logo} alt={'logo'} fill />
           </Box>
-          <Divider mb={1} size={'lg'} />
-
-          <VStack
-            spacing={'none'}
-            width={'5.85vw'}
-            alignItems={'center'}
-            h={`calc(100vh - 180px)`}
-            overflowY="auto"
-            css={scroll_customize_side}
-          >
+          <Divider borderColor={'#d7dce6'} mb={1} mt={1} size={'lg'} />
+          <VStack spacing={0} width={'100%'} alignItems={'start'} h={'calc(100vh - 180px)'} overflowY="auto" css={scroll_customize_side}>
             {menus.map((menu, i) => (
-              <DashboardLink
-                key={i}
-                redirectOn={menu.url}
-                active={activeLink?.activeOption == menu.active}
-                icon={menu.icon}
-                message={menu.name}
-              />
+              <Box key={i} w={'100%'}>
+                <DashboardLink
+                  redirectOn={menu.url}
+                  active={activeLink?.activeOption == menu.active}
+                  message={menu.name}
+                  icon={menu.icon}
+                  cursor='null'
+                  colorMenu={colors.primary.black}
+                />
+                {menu.subMenus && (
+                  <VStack pl={5} spacing={0}>
+                    {menu.subMenus.map((subMenu, j) => (
+                      <DashboardLink
+                        key={j}
+                        redirectOn={subMenu.url}
+                        active={activeLink?.activeOption == subMenu.active}
+                        message={subMenu.name}
+                        icon={null}
+                      />
+                    ))}
+                  </VStack>
+                )}
+              </Box>
             ))}
           </VStack>
         </VStack>
@@ -127,3 +87,4 @@ export const Sidebar = ({ activeLink }) => {
     </Box>
   );
 };
+

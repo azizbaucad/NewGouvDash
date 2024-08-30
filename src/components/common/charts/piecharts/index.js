@@ -125,7 +125,7 @@ const options = {
       text: 'Pourcentage budgétaire',
       padding: {
         top: 0,
-        bottom: 30,
+        bottom: 20,
       },
       color: '#666666',
       font: {
@@ -138,7 +138,7 @@ const options = {
     legend: {
       display: true,
       position: 'right',
-      align: 'center',
+      align: 'right',
       labels: {
         color: '#666',
         usePointStyle: true,
@@ -178,10 +178,10 @@ const options2 = {
   plugins: {
     title: {
       display: true,
-      text: 'Pourcentage Indice SN',
+      text: 'Pourcentage budgétaire',
       padding: {
         top: 0,
-        bottom: 30,
+        bottom: 20,
       },
       color: '#666666',
       font: {
@@ -194,7 +194,7 @@ const options2 = {
     legend: {
       display: true,
       position: 'right',
-      align: 'center',
+      align: 'right',
       labels: {
         color: '#666',
         usePointStyle: true,

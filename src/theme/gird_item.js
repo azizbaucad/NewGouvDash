@@ -2,7 +2,7 @@ module.exports = {
   name: 'Gird item theme',
   themeGirdItem: {
     style: {
-      bg: 'white',
+      bg: '#f9f9f9',
       bg_h: 'gray.50',
       h: 215,
       radius: 5,

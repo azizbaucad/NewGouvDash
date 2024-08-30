@@ -1,11 +1,12 @@
 import { HStack, Heading, Text } from '@chakra-ui/react';
+import { fonts } from '@theme';
 
 export const TagTitle = ({ title, subtitle, size }) => {
   return (
     <HStack>
-      <Heading fontSize={size} as={'b'}>
+      <Text color={'#000'} fontSize={size} fontWeight={'550'} >
         {title}
-      </Heading>
+      </Text>
       <Text fontSize={size} color="gray">
         {subtitle}
       </Text>

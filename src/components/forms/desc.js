@@ -112,10 +112,11 @@ export const DescForm = (props) => {
                   values,
                 }}
               />
+              
             </HStack>
             <Divider />
             <VStack alignItems="start">
-              <Text as="b"> Mix par canal digital </Text>
+              <Text as="b"> OFNAC </Text>
 
               <HStack w={'100%'} gap={10}>
                 <FormInput
@@ -179,149 +180,8 @@ export const DescForm = (props) => {
                   }}
                 />
               </HStack>
-              <Stack w={'20%'}>
-                <FormInput
-                  py={1}
-                  type="number"
-                  {...evitementSelfcareValue}
-                  {...{
-                    errors,
-                    handleChange,
-                    handleBlur,
-                    touched,
-                    values,
-                  }}
-                />
-              </Stack>
             </VStack>
 
-            <Divider />
-            <VStack alignItems="start">
-              <HStack w={'100%'} gap={10}>
-                <FormInput
-                  py={1}
-                  type="number"
-                  {...csatValue}
-                  {...{
-                    errors,
-                    handleChange,
-                    handleBlur,
-                    touched,
-                    values,
-                  }}
-                />
-                <FormInput
-                  py={1}
-                  type="number"
-                  {...dsatValue}
-                  {...{
-                    errors,
-                    handleChange,
-                    handleBlur,
-                    touched,
-                    values,
-                  }}
-                />
-                <FormInput
-                  py={1}
-                  type="number"
-                  {...serviceLevelValue}
-                  {...{
-                    errors,
-                    handleChange,
-                    handleBlur,
-                    touched,
-                    values,
-                  }}
-                />
-                <FormInput
-                  py={1}
-                  type="number"
-                  {...timeCycleValue}
-                  {...{
-                    errors,
-                    handleChange,
-                    handleBlur,
-                    touched,
-                    values,
-                  }}
-                />
-                <FormInput
-                  py={1}
-                  type="number"
-                  {...rateAbandonValue}
-                  {...{
-                    errors,
-                    handleChange,
-                    handleBlur,
-                    touched,
-                    values,
-                  }}
-                />
-              </HStack>
-              <HStack w={'100%'} gap={10}>
-                <FormInput
-                  py={1}
-                  type="number"
-                  {...npsValue}
-                  {...{
-                    errors,
-                    handleChange,
-                    handleBlur,
-                    touched,
-                    values,
-                  }}
-                />
-                <FormInput
-                  py={1}
-                  type="number"
-                  {...cesValue}
-                  {...{
-                    errors,
-                    handleChange,
-                    handleBlur,
-                    touched,
-                    values,
-                  }}
-                />
-                <FormInput
-                  py={1}
-                  type="number"
-                  {...trValue}
-                  {...{
-                    errors,
-                    handleChange,
-                    handleBlur,
-                    touched,
-                    values,
-                  }}
-                />
-                <FormInput
-                  py={1}
-                  type="number"
-                  {...caRebondValue}
-                  {...{
-                    errors,
-                    handleChange,
-                    handleBlur,
-                    touched,
-                    values,
-                  }}
-                />
-                <FormInput
-                  py={1}
-                  type="number"
-                  {...fcrValue}
-                  {...{
-                    errors,
-                    handleChange,
-                    handleBlur,
-                    touched,
-                    values,
-                  }}
-                />
-              </HStack>
-            </VStack>
 
             <HStack w={'48%'} gap={10} py={10}>
               <Button

@@ -61,15 +61,17 @@ export const ValuesData = ({
         <IconElement
           width={0}
           as={'b'}
+          pl={1}
           size={'.9rem'}
           color={
             iconType == 'down'
               ? colors.colorBadge.red.red_600
-              : colors.colorBadge.green.green_600
+              : '#02bc7d'
           }
           style={{
             fontWeight: '600',
             fontSize: '24px',
+            marginLeft: '5px',
           }}
         />
       ),
@@ -79,8 +81,9 @@ export const ValuesData = ({
       list: delta && [
         {
           content: delta.label,
-          fontSize: 10,
-          fontWeight: '600',
+          fontSize: 12,
+          fontFammily: "'Roboto Mono', sans-serif",
+          fontWeight: '550',
           color: '#48505f',
           as: 'b',
         },

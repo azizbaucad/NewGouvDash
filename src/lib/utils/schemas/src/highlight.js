@@ -32,21 +32,21 @@ export const DefaultHighlightstatus = [
   {
     name: realizes.label,
     icon: realizes.icon,
-    iconColor: realizes.style.iconColor,
+    iconColor: realizes.style.statusColor,
   },
   {
     name: difficults.label,
     icon: difficults.icon,
-    iconColor: difficults.style.iconColor,
+    iconColor: difficults.style.statusColor,
   },
   {
     name: challenges.label,
     icon: challenges.icon,
-    iconColor: challenges.style.iconColor,
+    iconColor: challenges.style.statusColor,
   },
   {
     name: coordinationPoint.label,
     icon: coordinationPoint.icon,
-    iconColor: coordinationPoint.style.iconColor,
+    iconColor: coordinationPoint.style.statusColor,
   },
 ];

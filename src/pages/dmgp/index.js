@@ -6,12 +6,13 @@ import {
   Box,
   Divider,
   Flex,
-  Grid,
-  GridItem,
   HStack,
-  Select,
   Spacer,
   Stack,
+  Grid,
+  GridItem,
+  Heading,
+  Select,
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
@@ -20,54 +21,73 @@ import { TagTitle } from '@components/common/title';
 import { DashboardLayout } from '@components/layout/dashboard';
 import { gird, hightlightStatus, titles, colors, direction } from '@theme';
 import { getToken } from 'next-auth/jwt';
-import { BsPlusLg } from 'react-icons/bs';
 import { PageTitle } from '@components/common/title/page';
-import { IconedButton } from '@components/common/button';
-import { HorizontalBarChart, HorizontalBarChart2 } from '@components/common/charts/barcharts';
-import { scroll_customize } from '@components/common/styleprops';
 import {
-  LineCharts,
-  LineChartsCAFixe,
-  LineChartsParcMobile,
-  LineChartsParcOM,
-} from '@components/common/charts/linecharts';
-import { ListSemaineItem } from '@components/common/dropdown_item';
-import { TabsPanelItem } from '@components/common/tabs';
-import {
-  DefaultHighlightstatus,
-  highlightStatusStyle,
-} from '@utils/schemas/src/highlight';
-import { useEffect, useState } from 'react';
+  HorizontalBarChart,
+  HorizontalBarChart2,
+} from '@components/common/charts/barcharts';
 import {
   getHightlightData,
   getHightlightStatus,
 } from '@utils/services/hightlight/data';
-import { HighlightModal } from '@components/common/modal/highlight';
+import { useEffect, useState } from 'react';
+
+import { scroll_customize } from '@components/common/styleprops';
+import { AiFillHome } from 'react-icons/ai';
+import { GiCash } from 'react-icons/gi';
 import moment from 'moment';
-import { getCurrentWeek, getLastWeek } from '@utils/services/date';
-import { createElement, getElement } from 'pages/api/global';
+import {
+  DefaultHighlightstatus,
+  highlightStatusStyle,
+} from '@utils/schemas/src/highlight';
+import {
+  getCurrentWeek,
+  getLastWeek,
+  getLastWeekList,
+} from '@utils/services/date';
 import {
   abreviateNumberWithXof,
   abreviateNumberWithXofWithBadge,
   abreviateNumberWithoutXof,
   abreviateNumberWithoutXofWithBadge,
   formaterNumber,
+  formaterNumberItalic,
   formaterNumberWithBadge,
   numberWithBadge,
+  numberWithBadgeItalic,
+  numberWithBadgeMarge,
   valueGetZero,
 } from '@utils/formater';
-
-import { Tooltip } from 'react-tooltip';
-import { DMenuButton } from '@components/common/menu_button';
-import { FaCheck, FaCopy } from 'react-icons/fa';
-import { ValidationModal } from '@components/common/modal/week_validator';
-import { CopyHighlightModal } from '@components/common/modal/highlight/copy/index.';
+import { getElement } from 'pages/api/global';
+import {
+  DirectionFilter,
+  HightLightFilter,
+  ListSemaineItem,
+} from '@components/common/dropdown_item';
 import { DataUnavailable } from '@components/common/data_unavailable';
+import { TabsPanelItem } from '@components/common/tabs';
+import {
+  LineCharts,
+  LineChartsParcOM,
+} from '@components/common/charts/linecharts';
 import { PieCharts, PieCharts2 } from '@components/common/charts/piecharts';
+import { DMenuButton } from '@components/common/menu_button';
+import { useRouter } from 'next/router';
+import { BsPlusLg } from 'react-icons/bs';
+import { FaFileExcel, FaCheck, FaCopy } from 'react-icons/fa';
 
-export default function DmgpPage(props) {
+export default function Dashboard(props) {
+  const [highlights, setHighlights] = useState([]);
+  const [error, setError] = useState();
+  const lastWeek = getLastWeek().week + '-' + getLastWeek().year;
+  const [selectedWeek, setSelectedWeek] = useState(lastWeek);
+  const [selectedStatus, setSelectedStatus] = useState('all');
+  const { realizes, difficults, challenges, coordinationPoint } =
+    hightlightStatus;
+  const statusList = [realizes, difficults, challenges, coordinationPoint];
+
   const gstyle = gird.style;
-  const { dmgp } = direction;
+
   const {
     onOpen: onOpenFm,
     isOpen: isOpenFm,
@@ -78,26 +98,119 @@ export default function DmgpPage(props) {
     isOpen: isOpenVal,
     onClose: onCloseVal,
   } = useDisclosure();
-  const {
-    onOpen: onCopyOpen,
-    isOpen: isCopyOpen,
-    onClose: onCopyClose,
-  } = useDisclosure();
+  const router = useRouter();
 
-  const [highlights, setHighlights] = useState();
-  const [highlightStatus, setHighlightStatus] = useState();
-  const [currentWeekList, setCurrentWeekList] = useState();
-  const [selectedHighlight, setSelectedHighlight] = useState();
-  const [error, setError] = useState();
-  const [role, setRole] = useState();
+  const simulatedData = [
+    {
+      id: 1,
+      title: 'Réunion avec les partenaires internationaux',
+      description: 'Discussion sur les projets de coopération en cours.',
+      direction: 'Direction Internationale', // Nouvelle propriété pour la direction
+      status: { name: 'realizes', label: 'Réalisés' },
+      date: '2024-08-01',
+    },
+    {
+      id: 2,
+      title: 'Problèmes logistiques',
+      description:
+        'Difficultés dans la distribution des ressources aux régions éloignées.',
+      direction: 'Direction Logistique', // Nouvelle propriété pour la direction
+      status: { name: 'difficults', label: 'Difficultés' },
+      date: '2024-08-03',
+    },
+    {
+      id: 3,
+      title: 'Négociation avec les syndicats',
+      description:
+        'Enjeu de maintenir la paix sociale dans un contexte de revendications.',
+      direction: 'Direction Sociale', // Nouvelle propriété pour la direction
+      status: { name: 'challenges', label: 'Enjeux' },
+      date: '2024-08-05',
+    },
+    {
+      id: 4,
+      title: 'Coordination entre les ministères',
+      description:
+        'Mise en place d’un Projet de coordination pour améliorer l’efficacité gouvernementale.',
+      direction: 'Direction Coordination', // Nouvelle propriété pour la direction
+      status: { name: 'coordinationPoint', label: 'En cours' },
+      date: '2024-08-07',
+    },
+    {
+      id: 5,
+      title: 'Réunion avec les partenaires internationaux',
+      description: 'Discussion sur les projets de coopération en cours.',
+      direction: 'Direction Internationale', // Nouvelle propriété pour la direction
+      status: { name: 'difficults', label: 'Réalisés' },
+      date: '2024-08-01',
+    },
+    {
+      id: 6,
+      title: 'Réunion avec les partenaires internationaux',
+      description: 'Discussion sur les projets de coopération en cours.',
+      direction: 'Direction Internationale', // Nouvelle propriété pour la direction
+      status: { name: 'difficults', label: 'Réalisés' },
+      date: '2024-08-01',
+    },
+    {
+      id: 7,
+      title: 'Réunion avec les partenaires internationaux',
+      description: 'Discussion sur les projets de coopération en cours.',
+      direction: 'Direction Internationale', // Nouvelle propriété pour la direction
+      status: { name: 'difficults', label: 'Réalisés' },
+      date: '2024-08-01',
+    },
+  ];
 
-  const { realizes, difficults, challenges, coordinationPoint } =
-    hightlightStatus;
-  const [selectedStatus, setSelectedStatus] = useState('all');
-  const statusList = [realizes, difficults, challenges, coordinationPoint];
+  const getHightlight = () => {
+    // Remplacer l'appel API par des données simulées
+    setHighlights(simulatedData);
+  };
 
-  const lastWeek = getLastWeek().week + '-' + getLastWeek().year;
-  const [selectedWeek, setSelectedWeek] = useState(lastWeek);
+  //Initialise Data
+  const initDmgpData = {
+    OM: 10,
+    seddo: null,
+    wave: null,
+    another: null,
+    //Add Another vars dor values data
+    caMobile: 10,
+    deltaCaMobileVsObj: null,
+    variationCaMobile: null,
+    //Add Parc Mobile
+    parcMobile: null,
+    deltaParcVsObj: null,
+    variationParcMobile: null,
+    //Add Ca Fixe
+    caFixe: null,
+    deltaCaFixeVsObj: null,
+    variationCaFixe: null,
+    //Add CA Fibre
+    caFibre: null,
+    deltaCaFibreVsObj: null,
+    variationCaFiber: null,
+    //Add  Parc Fixe
+    parcFixeCommercial: null,
+    deltaParcFixeCommercialVsObj: null,
+    variationParcCommercial: null,
+    parcFixeFacture: null,
+    variationParcFacture: null,
+    parcFibreFtthGP: null,
+    deltaParcFibreFtthGPVsObj: null,
+    variationParcFibreFtthGP: null,
+    parcFibreFtthGlobal: null,
+    deltaParcFibreFtthGlobalGPVsObj: null,
+    variationParcFibreFtthGlobal: null,
+    //Add Data Mobile
+    caDataMobile: null,
+    variationCaDataMobile: null,
+    parc4G: null,
+    variationParc4G: null,
+    percentageTraffic4G: null,
+    variationTraffic4G: null,
+  };
+
+  const [data, setData] = useState(initDmgpData);
 
   const initOfmsData = {
     //CaOfms Dto
@@ -137,213 +250,135 @@ export default function DmgpPage(props) {
 
   const [dataofms, setDataOfms] = useState(initOfmsData);
 
-  const initData = {
-    OM: null,
-    seddo: null,
-    wave: null,
-    another: null,
-    //Add Another vars dor values data
-    caMobile: null,
-    deltaCaMobileVsObj: null,
-    variationCaMobile: null,
-    //Add Parc Mobile
-    parcMobile: null,
-    deltaParcVsObj: null,
-    variationParcMobile: null,
-    //Add Ca Fixe
-    caFixe: null,
-    deltaCaFixeVsObj: null,
-    variationCaFixe: null,
-    //Add CA Fibre
-    caFibre: null,
-    deltaCaFibreVsObj: null,
-    variationCaFiber: null,
-    //Add  Parc Fixe
-    parcFixeCommercial: null,
-    deltaParcFixeCommercialVsObj: null,
-    variationParcCommercial: null,
-    parcFixeFacture: null,
-    variationParcFacture: null,
-    parcFibreFtthGP: null,
-    deltaParcFibreFtthGPVsObj: null,
-    variationParcFibreFtthGP: null,
-    parcFibreFtthGlobal: null,
-    deltaParcFibreFtthGlobalGPVsObj: null,
-    variationParcFibreFtthGlobal: null,
-    //Add Data Mobile
-    caDataMobile: null,
-    variationCaDataMobile: null,
-    parc4G: null,
-    variationParc4G: null,
-    percentageTraffic4G: null,
-    variationTraffic4G: null,
+  //Add Data DV
+  const initDvData = {
+    value_gross_add_fibre: null,
+    valueVsObjective_gross_add_fibre: null,
+    valueVariationWeek_gross_add_fibre: null,
+    valueCsat: null,
+    valueVariationWeekCsat: null,
+    valueVsObjectiveCsat: null,
   };
-
-  const [data, setData] = useState(initData);
-
-  const simulatedData = [
-    {
-      id: 1,
-      title: 'Réunion avec les partenaires internationaux',
-      description: 'Discussion sur les projets de coopération en cours.',
-      direction: 'Direction Internationale', // Nouvelle propriété pour la direction
-      status: { name: 'realizes', label: 'Réalisés' },
-      date: '2024-08-01',
-    },
-    {
-      id: 2,
-      title: 'Problèmes logistiques',
-      description:
-        'Difficultés dans la distribution des ressources aux régions éloignées.',
-      direction: 'Direction Logistique', // Nouvelle propriété pour la direction
-      status: { name: 'difficults', label: 'Difficultés' },
-      date: '2024-08-03',
-    },
-    {
-      id: 3,
-      title: 'Négociation avec les syndicats',
-      description:
-        'Enjeu de maintenir la paix sociale dans un contexte de revendications.',
-      direction: 'Direction Sociale', // Nouvelle propriété pour la direction
-      status: { name: 'challenges', label: 'Enjeux' },
-      date: '2024-08-05',
-    },
-    {
-      id: 4,
-      title: 'Coordination entre les ministères',
-      description:
-        'Mise en place d’un plan de coordination pour améliorer l’efficacité gouvernementale.',
-      direction: 'Direction Coordination', // Nouvelle propriété pour la direction
-      status: { name: 'coordinationPoint', label: 'En cours' },
-      date: '2024-08-07',
-    },
-    {
-      id: 5,
-      title: 'Réunion avec les partenaires internationaux',
-      description: 'Discussion sur les projets de coopération en cours.',
-      direction: 'Direction Internationale', // Nouvelle propriété pour la direction
-      status: { name: 'realizes', label: 'Réalisés' },
-      date: '2024-08-01',
-    },
-    {
-      id: 6,
-      title: 'Réunion avec les partenaires internationaux',
-      description: 'Discussion sur les projets de coopération en cours.',
-      direction: 'Direction Internationale', // Nouvelle propriété pour la direction
-      status: { name: 'realizes', label: 'Réalisés' },
-      date: '2024-08-01',
-    },
-    {
-      id: 7,
-      title: 'Réunion avec les partenaires internationaux',
-      description: 'Discussion sur les projets de coopération en cours.',
-      direction: 'Direction Internationale', // Nouvelle propriété pour la direction
-      status: { name: 'realizes', label: 'Réalisés' },
-      date: '2024-08-01',
-    },
-    {
-      id: 8,
-      title: 'Réunion avec les partenaires internationaux',
-      description: 'Discussion sur les projets de coopération en cours.',
-      direction: 'Direction Internationale', // Nouvelle propriété pour la direction
-      status: { name: 'realizes', label: 'Réalisés' },
-      date: '2024-08-01',
-    },
-  ];
-
-  const getHightlight = () => {
-    // Remplacer l'appel API par des données simulées
-    setHighlights(simulatedData);
-  };
+  const [datadv, setDataDv] = useState(initDvData);
 
   //Appel de getDmgpDta
 
   const getValuesData = () => {
+    setData(initDmgpData);
+  };
+
+  const getValuesDataDv = () => {
     const params =
       'week=' +
       selectedWeek?.split('-')[0] +
       '&year=' +
       selectedWeek?.split('-')[1];
-    getElement('v1/direction-data/dataDmgp?' + params)
+    getElement('v1/direction-data/data-dv?' + params)
       .then((res) => {
-        //console.log("res data dmpg", res)
-        if (res?.data) {
-          setData({
-            OM: res.data?.caMobileDto.percentageCaOrangeMoney,
-            seddo: res.data?.caMobileDto.percentageCaSeddo,
-            wave: res.data?.caMobileDto.percentageCaWave,
-            another: res.data?.caMobileDto.percentageCaOther,
-            expresso: res.data?.parcMobileDto.pdmExpresso,
-            free: res.data?.parcMobileDto.pdmFree,
-            orange: res.data?.parcMobileDto.pdmOrange,
-            promobile: res.data?.parcMobileDto.pdmPromobile,
-            fibre: res.data?.caFixeDto.percentageCaFiber,
-            another_offre: res.data?.caFixeDto.percentageOtherOffer,
-            caMobile: res.data?.caMobileDto.caMobile,
-            deltaCaMobileVsObj: res.data?.caMobileDto.deltaCaMobileVsObj,
-            variationCaMobile: res.data?.caMobileDto.variationCaMobile,
-            parcMobile: res.data?.parcMobileDto.parcMobile,
-            deltaParcVsObj: res.data?.parcMobileDto.deltaParcVsObj,
-            variationParcMobile: res.data?.parcMobileDto.variationParcMobile,
-            caFixe: res.data?.caFixeDto.caFixe,
-            deltaCaFixeVsObj: res.data?.caFixeDto.deltaCaFixeVsObj,
-            variationCaFixe: res.data?.caFixeDto.variationCaFixe,
-            caFibre: res.data?.caFixeDto.caFibre,
-            deltaCaFibreVsObj: res.data?.caFixeDto.deltaCaFibreVsObj,
-            variationCaFiber: res.data?.caFixeDto.variationCaFiber,
-            parcFixeCommercial: res.data?.parcFixeDto.parcFixeCommercial,
-            deltaParcFixeCommercialVsObj:
-              res.data?.parcFixeDto.deltaParcFixeCommercialVsObj,
-            variationParcCommercial:
-              res.data?.parcFixeDto.variationParcCommercial,
-            parcFixeFacture: res.data?.parcFixeDto.parcFixeFacture,
-            variationParcFacture: res.data?.parcFixeDto.variationParcFacture,
-            parcFibreFtthGP: res.data?.parcFixeDto.parcFibreFtthGP,
-            deltaParcFibreFtthGPVsObj:
-              res.data?.parcFixeDto.deltaParcFibreFtthGPVsObj,
-            variationParcFibreFtthGP:
-              res.data?.parcFixeDto.variationParcFibreFtthGP,
-            parcFibreFtthGlobal: res.data?.parcFixeDto.parcFibreFtthGlobal,
-            deltaParcFibreFtthGlobalGPVsObj:
-              res.data?.parcFixeDto.deltaParcFibreFtthGlobalGPVsObj,
-            variationParcFibreFtthGlobal:
-              res.data?.parcFixeDto.variationParcFibreFtthGlobal,
-            caDataMobile: res.data?.dataMobileDto.caDataMobile,
-            variationCaDataMobile:
-              res.data?.dataMobileDto.variationCaDataMobile,
-            parc4G: res.data?.dataMobileDto.parc4G,
-            variationParc4G: res.data?.dataMobileDto.variationParc4G,
-            percentageTraffic4G: res.data?.dataMobileDto.percentageTraffic4G,
-            variationTraffic4G: res.data?.dataMobileDto.variationTraffic4G,
+        if (res.data) {
+          setDataDv({
+            value_gross_add_fibre: res.data?.value_gross_add_fibre,
+            valueVsObjective_gross_add_fibre:
+              res.data?.valueVsObjective_gross_add_fibre,
+            valueVariationWeek_gross_add_fibre:
+              res.data?.valueVariationWeek_gross_add_fibre,
+
+            valueCsat: res.data?.valueCsat,
+            valueVariationWeekCsat: res.data?.valueVariationWeekCsat,
+            valueVsObjectiveCsat: res.data?.valueVsObjectiveCsat,
           });
-        } else {
-          setData(initData);
-        }
-        //console.log('Res data ...', res_data_om)
+        } else setData(initDvData);
       })
       .catch((error) => {
-        setData(initData);
-        console.log(error);
+        setData(initDvData);
+        //console.log('Error ::: ', error);
       });
   };
 
-  console.log('Delta Parc Fixe Commercial ...', data.deltaParcFibreFtthGPVsObj);
-  //console.log('Data CA Mobile', data.caMobile)
+  const getValuesDataOfms = () => {
+    const params =
+      'week=' +
+      selectedWeek?.split('-')[0] +
+      '&year=' +
+      selectedWeek?.split('-')[1];
+    getElement('v1/direction-data/data-ofms?' + params)
+      .then((res) => {
+        if (res?.data) {
+          setDataOfms({
+            //Ca Ofms
+            caOfmsWeek: res.data?.caOFMSDto.caOfmsWeek,
+            caOfmsWeekVsObjectiveCaOfmsWeek:
+              res.data?.caOFMSDto.caOfmsWeekVsObjectiveCaOfmsWeek,
+            variationCaOfmsWeek: res.data?.caOFMSDto.variationCaOfmsWeek,
+            caOfmsMonthToDate: res.data?.caOFMSDto.caOfmsMonthToDate,
+            variationCaOfmsMonthToDate:
+              res.data?.caOFMSDto.variationCaOfmsMonthToDate,
+            caOfmsYear: res.data?.caOFMSDto.caOfmsYear,
+            variationCaOfmsYear: res.data?.caOFMSDto.variationCaOfmsYear,
+            //Commissions
+            commissionWeek: res.data?.commissionOFMSDto.commissionWeek,
+            variationCommissionWeek:
+              res.data?.commissionOFMSDto.variationCommissionWeek,
+            variationCommissionWeekFour:
+              res.data?.commissionOFMSDto.variationCommissionWeekFour,
+            commissionMonthToDate:
+              res.data?.commissionOFMSDto.commissionMonthToDate,
+            variationCommissionMonthToDate:
+              res.data?.commissionOFMSDto.variationCommissionMonthToDate,
+            commissionYear: res.data?.commissionOFMSDto.commissionYear,
+            variationCommissionYear:
+              res.data?.commissionOFMSDto.variationCommissionYear,
+            //Marges
+            margeWeek: res.data?.margeOFMSDto.margeWeek,
+            variationMargeWeek: res.data?.margeOFMSDto.variationMargeWeek,
+            variationMargeWeekFour:
+              res.data?.margeOFMSDto.variationMargeWeekFour,
+            margeMonth: res.data?.margeOFMSDto.margeMonth,
+            variationMargeMonth: res.data?.margeOFMSDto.variationMargeMonth,
+            margeYear: res.data?.margeOFMSDto.margeYear,
+            variationMargeYear: res.data?.margeOFMSDto.variationMargeYear,
+            //parcs
+            //Parc Ofms
+            parcActive: res.data?.parcOFMSDto.parcActive,
+            parcActiveVsObj: res.data?.parcOFMSDto.parcActiveVsObj,
+            variationParcActiveWeek:
+              res.data?.parcOFMSDto.variationParcActiveWeek,
+            variationParcActiveFourWeek:
+              res.data?.parcOFMSDto.variationParcActiveFourWeek,
+
+            parcRegistered: res.data?.parcOFMSDto.parcRegistered,
+            parcRegisteredVsObj: res.data?.parcOFMSDto.parcRegisteredVsObj,
+            variationRegisteredWeek:
+              res.data?.parcOFMSDto.variationRegisteredWeek,
+            variationParcRegisteredFourWeek:
+              res.data?.parcOFMSDto.variationParcRegisteredFourWeek,
+          });
+        } else setData(initOfmsData);
+      })
+      .catch((error) => {
+        setData(initOfmsData);
+        //console.log('Error :::', error);
+      });
+  };
+
+  console.log('Parc Telco .....', dataofms.parcRegisteredVsObj);
+
+  const backColor = ['#1bc28a', '#a3a3ff', '#34c997', '#adadff'];
 
   const DataCaMobile = [
     {
       id: 1,
-      part: 'Indice1',
+      part: 'Projet 1',
       percent: 10,
     },
     {
       id: 2,
-      part: 'Indice2',
+      part: 'Projet 2',
       percent: 20,
     },
     {
       id: 3,
-      part: 'Indice3',
+      part: 'Projet 3',
       percent: 20,
     },
     {
@@ -356,22 +391,22 @@ export default function DmgpPage(props) {
   const ParcDataMobile = [
     {
       id: 1,
-      part: 'Indice1',
+      part: 'Projet 1',
       percent: 30,
     },
     {
       id: 2,
-      part: 'Indice2',
+      part: 'Projet 2',
       percent: 20,
     },
     {
       id: 3,
-      part: 'Indice3',
+      part: 'Projet 3',
       percent: 40,
     },
     {
       id: 4,
-      part: 'Indice4',
+      part: 'Projet 4',
       percent: 10,
     },
   ];
@@ -389,25 +424,6 @@ export default function DmgpPage(props) {
     },
   ];
 
-
-
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setRole(sessionStorage.getItem('role'));
-    }
-    getHightlight();
-    getValuesData();
-    DataCaMobile;
-  }, [selectedWeek]);
-
-  const openHightlightModal = () => {
-    getHightlightStatus(null, setHighlightStatus, setError);
-    setCurrentWeekList([getCurrentWeek(), getLastWeek()]);
-    onOpenFm();
-  };
-
-  const backgroundColors = ['#ff903d', '#4bc0c0', '#36a2eb', '#cdd4e0'];
   const data_ = {
     labels: DataCaMobile?.map((item) => item.part),
     datasets: [
@@ -420,7 +436,7 @@ export default function DmgpPage(props) {
         data: DataCaMobile?.map((item) =>
           isNaN(item.percent) ? 0.1 : item.percent
         ),
-        backgroundColor: ['#4bc0c0', '#4bc0c0', '#4bc0c0', '#4bc0c0'],
+        backgroundColor: backColor,
       },
     ],
   };
@@ -437,133 +453,72 @@ export default function DmgpPage(props) {
         data: ParcDataMobile?.map((item) =>
           isNaN(item.percent) ? 0.1 : item.percent
         ),
-        backgroundColor: ['#4bc0c0', '#329e9e', '#2f8f8f', '#3b8686'],
+        backgroundColor: backColor,
       },
     ],
   };
 
-  const data_CaFixe = {
-    labels: CaFixe?.map((item) => item.part),
-    datasets: [
-      {
-        barThickness: CaFixe?.map((item) => (isNaN(item.percent) ? 0.1 : 18)),
-        barPercentage: 0,
-        label: 'Part de marché',
-        data: CaFixe?.map((item) => (isNaN(item.percent) ? 0.1 : item.percent)),
-        backgroundColor: ['#ff903d', '#cdd4e0'],
-      },
-    ],
-  };
-
-  const newHightlight = () => {
-    setSelectedHighlight(null);
-    openHightlightModal();
-  };
-
-  const openHightlight = (highligh) => {
-    setSelectedHighlight(highligh);
-    openHightlightModal();
-  };
+  useEffect(() => {
+    getHightlight();
+    getValuesData();
+    getValuesDataDv();
+    getValuesDataOfms();
+  }, [selectedWeek]);
 
   const onDMenuChange = (value) => {
-    if (value == 'hightlight') return newHightlight();
     if (value === 'validate') return onOpenVal();
-    if (value === 'copy-hightlight') onCopyOpen();
+    if (value == 'hightlight') newHightlight();
+    if (value == 'data') router.push('dashboard/form/' + selectedWeek);
+    if (value == 'copy-hightlight') onCopyOpen();
   };
 
   const displayHighlight = (highligh, i) => (
     <HightlightContent
       key={i}
-      title={highligh?.direction?.name + ' • ' + highligh?.title}
-      body={highligh?.textHighlight}
-      iconBgColor={
-        highlightStatusStyle(highligh?.status?.name)?.style.iconColor
-      }
-      date={moment(highligh?.createdAt).format('DD-MM-YYYY')}
-      bgColor={highlightStatusStyle(highligh?.status?.name)?.style.bgColor}
-      icon={highlightStatusStyle(highligh?.status?.name)?.icon}
-      openHightlight={() => openHightlight(highligh)}
+      title={`${highligh.direction} • ${highligh.title}`}
+      body={highligh.description}
+      iconBgColor={highlightStatusStyle(highligh.status?.name)?.style.iconColor}
+      date={moment(highligh.date).format('DD-MM-YYYY')}
+      bgColor={highlightStatusStyle(highligh.status?.name)?.style.bgColor}
+      icon={highlightStatusStyle(highligh.status?.name)?.icon}
     />
   );
 
   return (
     <DashboardLayout activeMenu={'account-dmgp'}>
-      <HighlightModal
-        onOpen={onOpenFm}
-        onClose={onCloseFm}
-        isOpen={isOpenFm}
-        weekListOption={currentWeekList}
-        highlightStatus={highlightStatus}
-        getHightlight={getHightlight}
-        setSelectedWeek={setSelectedWeek}
-        selectedWeek={selectedWeek}
-        direction={dmgp}
-        selectedHighlight={selectedHighlight}
-      />
-
-      <CopyHighlightModal
-        onOpen={onCopyOpen}
-        onClose={onCopyClose}
-        isOpen={isCopyOpen}
-        weekListOption={currentWeekList}
-        setSelectedWeek={setSelectedWeek}
-        selectedWeek={selectedWeek}
-        direction={dmgp}
-        getHightlight={getHightlight}
-      />
-
-      <ValidationModal
-        onOpen={onOpenVal}
-        onClose={onCloseVal}
-        isOpen={isOpenVal}
-        direction={dmgp}
-        week={selectedWeek}
-      />
-
-      <Flex mt={10} px={2} w={'100%'} mb={3}>
+      <Flex mt={10} px={2} w={'100%'} mb={0}>
         <Box>
           <PageTitle
             titleSize={17}
             titleColor={'black'}
             subtitleColor={'gray'}
             subtitleSize={14}
-            icon={dmgp.icon}
-            title={dmgp.label}
-            subtitle={' / ' + dmgp.description}
+            icon={<AiFillHome fontSize={24} color="white" />}
+            title={'Primature'}
+            subtitle={'/ Dashboard Section Intérieur'}
           />
         </Box>
         <Spacer />
         <Box mr={2}>
-          {role && !role.includes('codir') && (
             <DMenuButton
               onChange={onDMenuChange}
-              name={'Nouvelle taches'}
+              name={'Effectuer une action'}
               rightIcon={<BsPlusLg />}
               menus={[
                 {
-                  icon: <FaCheck />,
-                  value: 'validate',
-                  label: 'Valider',
-                },
-                {
                   icon: <BsPlusLg />,
-                  value: 'hightlight',
-                  label: 'Nouveau fait marquant',
-                },
-                {
-                  icon: <FaCopy />,
-                  value: 'copy-hightlight',
-                  label: 'Copier une semaine',
+                  value: 'data',
+                  label: 'Remplir un formulaire',
                 },
               ]}
             />
-          )}
         </Box>
         <ListSemaineItem
           onWeekSelect={setSelectedWeek}
           selectedWeek={selectedWeek}
         />
       </Flex>
+
       <Stack p={3} mt={6} w={'100%'}>
         <Grid
           templateRows="repeat(5, 1fr)"
@@ -580,48 +535,24 @@ export default function DmgpPage(props) {
           >
             {/* Content for Chiffre d'affaires */}
             <Box>
-              <TagTitle title={'Communication et Transparence'} size={16} />
+              <TagTitle title={'IGE'} size={16} />
             </Box>
             <Divider mt={3} mb={2} />
             <HStack justifyContent={'space-between'} alignItems="center">
-              <Box>
+              <HStack justifyContent={'space-between'}>
                 <ValuesData
-                  tagName="TRC"
-                  full_value={formaterNumber(
-                    dataofms.parcActive,
-                    18,
-                    '#ffffff',
-                    600
-                  )}
-                  value={formaterNumber(dataofms.parcActive, 22)}
-                  iconType={dataofms.variationParcActiveWeek > 0 ? 'up' : 'up'}
-                  lastVal={
-                    dataofms.variationParcActiveWeek > 0
-                      ? {
-                          value: numberWithBadge(
-                            data.variationParcActiveWeek,
-                            12,
-                            12,
-                            colors.colorBadge.green.green_600,
-                            600,
-                            700
-                          ),
-                          label: titles.title.label.s1,
-                        }
-                      : {
-                          value: numberWithBadge(
-                            dataofms.variationParcActiveWeek,
-                            12,
-                            12,
-                            colors.colorBadge.green.green_600,
-                            600,
-                            700
-                          ),
-                          label: titles.title.label.s1,
-                        }
-                  }
+                  tagName="Projet 1"
+                  iconType="up"
+                  value={6000}
+                  unit="Gxof"
+                  delta={{
+                    label: 'Last Year',
+                    value: '+5%',
+                    valueColor: '#02bc7d',
+                  }}
                 />
-              </Box>
+                <GiCash size={24} color='#9999ff' />
+              </HStack>
 
               <Box h={'15vh'}>
                 <Divider
@@ -633,42 +564,20 @@ export default function DmgpPage(props) {
                 />
               </Box>
               <Box>
+              <HStack justifyContent={'space-between'}>
                 <ValuesData
-                  tagName="Taux RPC"
-                  full_value={formaterNumber(
-                    dataofms.parcRegistered,
-                    18,
-                    '#ffffff',
-                    600
-                  )}
-                  value={formaterNumber(dataofms.parcRegistered, 22)}
-                  iconType={dataofms.variationRegisteredWeek > 0 ? 'up' : 'up'}
-                  lastVal={
-                    dataofms.variationRegisteredWeek > 0
-                      ? {
-                          value: numberWithBadge(
-                            dataofms.variationRegisteredWeek,
-                            12,
-                            12,
-                            colors.colorBadge.green.green_600,
-                            600,
-                            700
-                          ),
-                          label: titles.title.label.s1,
-                        }
-                      : {
-                          value: numberWithBadge(
-                            dataofms.variationRegisteredWeek,
-                            12,
-                            12,
-                            colors.colorBadge.green.green_600,
-                            600,
-                            700
-                          ),
-                          label: titles.title.label.s1,
-                        }
-                  }
+                  tagName="Projet 2"
+                  iconType="up"
+                  value={6000}
+                  unit="Gxof"
+                  delta={{
+                    label: 'Last Year',
+                    value: '+5%',
+                    valueColor: '#02bc7d',
+                  }}
                 />
+                <GiCash size={24} color='#9999ff' />
+              </HStack>
               </Box>
               <Box h={'15vh'}>
                 <Divider
@@ -680,40 +589,20 @@ export default function DmgpPage(props) {
                 />
               </Box>
               <Box>
+              <HStack justifyContent={'space-between'}>
                 <ValuesData
-                  tagName="SCSU"
-                  full_value={formaterNumber(
-                    data.parcFibreFtthGP,
-                    18,
-                    '#ffffff',
-                    600
-                  )}
-                  value={formaterNumber(data.parcFibreFtthGP, 22)}
-                  iconType={data.variationParcFibreFtthGP > 0 ? 'up' : 'down'}
-                  lastVal={
-                    data.variationParcFibreFtthGP > 0
-                      ? {
-                          value: formaterNumberWithBadge(
-                            data.variationParcFibreFtthGP,
-                            12,
-                            colors.colorBadge.green.green_600,
-                            600
-                          ),
-                          label: titles.title.label.m1,
-                          valueColor: colors.colorBadge.green.green_600,
-                        }
-                      : {
-                          value: formaterNumberWithBadge(
-                            data.variationParcFibreFtthGP,
-                            12,
-                            colors.colorBadge.red.red_600,
-                            600
-                          ),
-                          label: titles.title.label.m1,
-                          valueColor: colors.colorBadge.red.red_600,
-                        }
-                  }
+                  tagName="Projet 3"
+                  iconType="up"
+                  value={6000}
+                  unit="Gxof"
+                  delta={{
+                    label: 'Last Year',
+                    value: '+5%',
+                    valueColor: '#02bc7d',
+                  }}
                 />
+                <GiCash size={24} color='#9999ff' />
+              </HStack>
               </Box>
             </HStack>
           </GridItem>
@@ -722,60 +611,29 @@ export default function DmgpPage(props) {
             rowSpan={1}
             colSpan={2}
             bg={gstyle.bg}
-            borderRadius={gstyle.radius}
             p={gstyle.p}
+            borderRadius={gstyle.radius}
           >
-            {/* Content for Part de marché (en %) */}
+            {/* Content for Chiffre d'affaires */}
             <Box>
-              <TagTitle title={'Gestion Ressources Humaines'} size={14} />
+              <TagTitle title={'Cos P&G'} size={16} />
             </Box>
-            <Divider mt={3} mb={1} />
+            <Divider mt={3} mb={2} />
             <HStack justifyContent={'space-between'} alignItems="center">
-              <Box>
+              <HStack justifyContent={'space-between'}>
                 <ValuesData
-                  tagName={'Taux Emission CO2'}
-                  full_value={formaterNumber(
-                    dataofms.caOfmsWeek,
-                    18,
-                    '#ffffff',
-                    600
-                  )}
-                  value={abreviateNumberWithXof(
-                    dataofms.caOfmsWeek,
-                    22,
-                    16,
-                    '',
-                    700,
-                    600
-                  )}
-                  iconType={dataofms.variationCaOfmsWeek > 0 ? 'up' : 'up'}
-                  lastVal={
-                    dataofms.variationCaOfmsWeek > 0
-                      ? {
-                          value: numberWithBadge(
-                            dataofms.variationCaOfmsWeek,
-                            12,
-                            12,
-                            colors.colorBadge.green.green_600,
-                            600,
-                            700
-                          ),
-                          label: titles.title.label.s1,
-                        }
-                      : {
-                          value: numberWithBadge(
-                            dataofms.variationCaOfmsWeek,
-                            12,
-                            12,
-                            colors.colorBadge.green.green_600,
-                            600,
-                            700
-                          ),
-                          label: titles.title.label.s1,
-                        }
-                  }
+                  tagName="Projet 1"
+                  iconType="up"
+                  value={6000}
+                  unit="Gxof"
+                  delta={{
+                    label: 'Last Year',
+                    value: '+5%',
+                    valueColor: '#02bc7d',
+                  }}
                 />
-              </Box>
+                <GiCash size={24} color='#9999ff' />
+              </HStack>
 
               <Box h={'15vh'}>
                 <Divider
@@ -787,51 +645,20 @@ export default function DmgpPage(props) {
                 />
               </Box>
               <Box>
+              <HStack justifyContent={'space-between'}>
                 <ValuesData
-                  tagName={'Taux ER'}
-                  full_value={formaterNumber(
-                    dataofms.caOfmsMonthToDate,
-                    18,
-                    '#ffffff',
-                    600
-                  )}
-                  value={abreviateNumberWithXof(
-                    dataofms.caOfmsMonthToDate,
-                    22,
-                    16,
-                    '',
-                    700,
-                    600
-                  )}
-                  iconType={
-                    dataofms.variationCaOfmsMonthToDate < 0 ? 'down' : 'up'
-                  }
-                  lastVal={
-                    dataofms.variationCaOfmsYear < 0
-                      ? {
-                          value: numberWithBadge(
-                            dataofms.variationCaOfmsYear,
-                            12,
-                            12,
-                            colors.colorBadge.green.green_600,
-                            600,
-                            700
-                          ),
-                          label: titles.title.label.y1,
-                        }
-                      : {
-                          value: numberWithBadge(
-                            dataofms.variationCaOfmsYear,
-                            12,
-                            12,
-                            colors.colorBadge.green.green_600,
-                            600,
-                            700
-                          ),
-                          label: titles.title.label.y1,
-                        }
-                  }
+                  tagName="Projet 2"
+                  iconType="up"
+                  value={6000}
+                  unit="Gxof"
+                  delta={{
+                    label: 'Last Year',
+                    value: '+5%',
+                    valueColor: '#02bc7d',
+                  }}
                 />
+                <GiCash size={24} color='#9999ff' />
+              </HStack>
               </Box>
               <Box h={'15vh'}>
                 <Divider
@@ -843,49 +670,20 @@ export default function DmgpPage(props) {
                 />
               </Box>
               <Box>
+              <HStack justifyContent={'space-between'}>
                 <ValuesData
-                  tagName={'Indice QAir'}
-                  full_value={formaterNumber(
-                    dataofms.caOfmsYear,
-                    18,
-                    '#ffffff',
-                    600
-                  )}
-                  value={abreviateNumberWithXof(
-                    dataofms.caOfmsYear,
-                    22,
-                    16,
-                    '',
-                    700,
-                    600
-                  )}
-                  iconType={dataofms.variationCaOfmsYear > 0 ? 'up' : 'down'}
-                  lastVal={
-                    dataofms.variationCaOfmsYear > 0
-                      ? {
-                          value: numberWithBadge(
-                            dataofms.variationCaOfmsYear,
-                            12,
-                            12,
-                            colors.colorBadge.green.green_600,
-                            600,
-                            700
-                          ),
-                          label: titles.title.label.y1,
-                        }
-                      : {
-                          value: numberWithBadge(
-                            dataofms.variationCaOfmsYear,
-                            12,
-                            12,
-                            colors.colorBadge.red.red_600,
-                            600,
-                            700
-                          ),
-                          label: titles.title.label.y1,
-                        }
-                  }
+                  tagName="Projet 3"
+                  iconType="up"
+                  value={6000}
+                  unit="Gxof"
+                  delta={{
+                    label: 'Last Year',
+                    value: '+5%',
+                    valueColor: '#02bc7d',
+                  }}
                 />
+                <GiCash size={24} color='#9999ff' />
+              </HStack>
               </Box>
             </HStack>
           </GridItem>
@@ -953,7 +751,7 @@ export default function DmgpPage(props) {
             <>
               <Box>
                 <ValuesData
-                  tagName="Indice de BES"
+                  tagName="Projet de BES"
                   full_value={formaterNumber(
                     data.parcMobile,
                     18,
@@ -1059,7 +857,7 @@ export default function DmgpPage(props) {
             <>
               <Box>
                 <ValuesData
-                  tagName="Indice de SN"
+                  tagName="Projet de SN"
                   full_value={formaterNumber(
                     data.parcMobile,
                     18,
@@ -1099,7 +897,6 @@ export default function DmgpPage(props) {
             </>
           </GridItem>
 
-          
           <GridItem
             colSpan={2}
             bg={gstyle.bg}
@@ -1108,7 +905,12 @@ export default function DmgpPage(props) {
           >
             {/* Content for CA Recharge/Obj(Gxof) */}
             <Box>
-              <TagTitle title={'Evolution des Projets Réalisés par rapport aux objectfis'} size={16} />
+              <TagTitle
+                title={
+                  'Evolution des Projets Réalisés par rapport aux objectfis'
+                }
+                size={16}
+              />
             </Box>
             <Divider mb={3} mt={3} />
 
@@ -1151,7 +953,7 @@ export default function DmgpPage(props) {
             overflowY="auto"
             css={scroll_customize}
           >
-            <Stack mt={3}>
+            <Stack mt={0}>
               <HightlightHeader status={DefaultHighlightstatus} />
             </Stack>
 

@@ -3,7 +3,7 @@ module.exports = {
   themePagesMessages: {
     login: {
       heading: {
-        title: 'Bienvenue à Gouv\'Dash',
+        title: 'Bienvenue à Gov\'Dash',
         subtitle: 'Vos données à portée de main',
       },
       specifics: {

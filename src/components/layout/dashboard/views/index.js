@@ -20,8 +20,10 @@ import { scroll_customize } from '@components/common/styleprops';
 
 export const DesktopDashboardLayoutView = ({ children, activeLink }) => {
   return (
-    <Stack h={'100vh'} w={'100%'} bgColor={'#cdd4e0'}>
-      <HStack alignItems={'flex-start'} h={'100vh'} w={'100%'} gap={'none'}>
+    <Stack h={'100vh'} w={'100%'} bgColor={'#d7dce6'}>
+      <HStack alignItems={'flex-start'} h={'100vh'} w={'100%'} gap={'none'} 
+          overflowY="auto"
+          css={scroll_customize}>
         {/* User Sidebar */}
         <Sidebar activeLink={activeLink} />
         {/* End User Sidebar */}
@@ -29,13 +31,12 @@ export const DesktopDashboardLayoutView = ({ children, activeLink }) => {
         {/* Dashboard Content */}
         <Stack
           h={'100%'}
-          overflowY="auto"
-          css={scroll_customize}
           w={'100%'}
           alignItems="center"
-          marginLeft={'6vw'}
+          marginLeft={'9.5vw'}
+          marginRight={'0vw'}
         >
-          <Box w={'96%'}>
+          <Box w={'94%'}>
             <VStack>{children}</VStack>
           </Box>
         </Stack>

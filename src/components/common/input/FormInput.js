@@ -36,13 +36,14 @@ export const FormInput = ({
   py,
   pt,
   pb,
+  mt,
   isDisabled,
   passwordTypeToggler,
   secureTextEntry,
 }) => {
   const inputProps = {
     bgColor: dark ? colors.transparent : colors.white,
-    color: dark ? colors.white : colors.primary.gray,
+    color: dark ? colors.white : colors.primary.black,
     name: uid,
     onChange: handleChange,
     onBlur: handleBlur,
@@ -56,7 +57,7 @@ export const FormInput = ({
     isDisabled,
   };
   return (
-    <FormControl {...{ pt, pb, py }} isInvalid={errors[uid]}>
+    <FormControl {...{ pt, pb, py, mt}} isInvalid={errors[uid]}>
       <FormLabel color={inputProps.color} fontWeight={500}>
         {label}
       </FormLabel>
@@ -109,6 +110,7 @@ export const FormSubmit = ({
   isSubmitting,
   pt,
   pb,
+  mt,
   colorScheme,
   color,
   bgColor,
@@ -119,7 +121,7 @@ export const FormSubmit = ({
   h = '3rem',
 }) => {
   return (
-    <FormControl {...{ pt, pb, colorScheme }}>
+    <FormControl {...{ pt, pb, colorScheme, mt }}>
       <Button
         {...{
           rightIcon,

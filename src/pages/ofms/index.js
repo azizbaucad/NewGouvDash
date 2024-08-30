@@ -6,12 +6,13 @@ import {
   Box,
   Divider,
   Flex,
-  Grid,
-  GridItem,
   HStack,
-  Select,
   Spacer,
   Stack,
+  Grid,
+  GridItem,
+  Heading,
+  Select,
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
@@ -20,54 +21,73 @@ import { TagTitle } from '@components/common/title';
 import { DashboardLayout } from '@components/layout/dashboard';
 import { gird, hightlightStatus, titles, colors, direction } from '@theme';
 import { getToken } from 'next-auth/jwt';
-import { BsPlusLg } from 'react-icons/bs';
 import { PageTitle } from '@components/common/title/page';
-import { IconedButton } from '@components/common/button';
-import { scroll_customize } from '@components/common/styleprops';
 import {
-  RefactoringStackedBarChart,
-  StackedBarChart,
-} from '@components/common/charts/stackedbarcharts';
-import { LineCharts } from '@components/common/charts/linecharts';
-import { ListSemaineItem } from '@components/common/dropdown_item';
-import { TabsPanelItem } from '@components/common/tabs';
+  HorizontalBarChart,
+  HorizontalBarChart2,
+} from '@components/common/charts/barcharts';
+import {
+  getHightlightData,
+  getHightlightStatus,
+} from '@utils/services/hightlight/data';
 import { useEffect, useState } from 'react';
-import { getElement } from 'pages/api/global';
-import {
-  abreviateNumberWithXof,
-  abreviateNumberWithXofWithBadge,
-  abreviateNumberWithoutXof,
-  formaterNumber,
-  formaterNumberWithBadge,
-  numberWithBadge,
-  numberWithBadgeMarge,
-  valueGetZero,
-} from '@utils/formater';
+
+import { scroll_customize } from '@components/common/styleprops';
+import { AiFillHome } from 'react-icons/ai';
+import { GiCash } from 'react-icons/gi';
+import moment from 'moment';
 import {
   DefaultHighlightstatus,
   highlightStatusStyle,
 } from '@utils/schemas/src/highlight';
 import {
-  getHightlightData,
-  getHightlightStatus,
-} from '@utils/services/hightlight/data';
-import { HighlightModal } from '@components/common/modal/highlight';
-import moment from 'moment';
-import { getCurrentWeek, getLastWeek } from '@utils/services/date';
+  getCurrentWeek,
+  getLastWeek,
+  getLastWeekList,
+} from '@utils/services/date';
 import {
-  LineChartRefactoring,
-  LineChartsExample,
-} from '@components/common/charts/linechart_refactoring';
-import { ValidationModal } from '@components/common/modal/week_validator';
+  abreviateNumberWithXof,
+  abreviateNumberWithXofWithBadge,
+  abreviateNumberWithoutXof,
+  abreviateNumberWithoutXofWithBadge,
+  formaterNumber,
+  formaterNumberItalic,
+  formaterNumberWithBadge,
+  numberWithBadge,
+  numberWithBadgeItalic,
+  numberWithBadgeMarge,
+  valueGetZero,
+} from '@utils/formater';
+import { getElement } from 'pages/api/global';
+import {
+  DirectionFilter,
+  HightLightFilter,
+  ListSemaineItem,
+} from '@components/common/dropdown_item';
+import { DataUnavailable } from '@components/common/data_unavailable';
+import { TabsPanelItem } from '@components/common/tabs';
+import {
+  LineCharts,
+  LineChartsParcOM,
+} from '@components/common/charts/linecharts';
+import { PieCharts, PieCharts2 } from '@components/common/charts/piecharts';
 import { DMenuButton } from '@components/common/menu_button';
 import { useRouter } from 'next/router';
-import { FaCheck, FaCopy } from 'react-icons/fa';
-import { CopyHighlightModal } from '@components/common/modal/highlight/copy/index.';
-import { DataUnavailable } from '@components/common/data_unavailable';
+import { BsPlusLg } from 'react-icons/bs';
+import { FaFileExcel, FaCheck, FaCopy } from 'react-icons/fa';
 
-export default function OfmsPage(props) {
+export default function Dashboard(props) {
+  const [highlights, setHighlights] = useState([]);
+  const [error, setError] = useState();
+  const lastWeek = getLastWeek().week + '-' + getLastWeek().year;
+  const [selectedWeek, setSelectedWeek] = useState(lastWeek);
+  const [selectedStatus, setSelectedStatus] = useState('all');
+  const { realizes, difficults, challenges, coordinationPoint } =
+    hightlightStatus;
+  const statusList = [realizes, difficults, challenges, coordinationPoint];
+
   const gstyle = gird.style;
-  const { ofms } = direction;
+
   const {
     onOpen: onOpenFm,
     isOpen: isOpenFm,
@@ -78,71 +98,121 @@ export default function OfmsPage(props) {
     isOpen: isOpenVal,
     onClose: onCloseVal,
   } = useDisclosure();
-  const {
-    onOpen: onCopyOpen,
-    isOpen: isCopyOpen,
-    onClose: onCopyClose,
-  } = useDisclosure();
-
   const router = useRouter();
 
-  const { realizes, difficults, challenges, coordinationPoint } =
-    hightlightStatus;
-
-  const [highlights, setHighlights] = useState();
-  const [highlightStatus, setHighlightStatus] = useState();
-  const [currentWeekList, setCurrentWeekList] = useState();
-  const [selectedHighlight, setSelectedHighlight] = useState();
-  const [error, setError] = useState();
-  const [role, setRole] = useState();
-
-  const [selectedStatus, setSelectedStatus] = useState('all');
-  const statusList = [realizes, difficults, challenges, coordinationPoint];
-
-  const lastWeek = getLastWeek().week + '-' + getLastWeek().year;
-  const [selectedWeek, setSelectedWeek] = useState(lastWeek);
+  const simulatedData = [
+    {
+      id: 1,
+      title: 'Réunion avec les partenaires internationaux',
+      description: 'Discussion sur les projets de coopération en cours.',
+      direction: 'Direction Internationale', // Nouvelle propriété pour la direction
+      status: { name: 'realizes', label: 'Réalisés' },
+      date: '2024-08-01',
+    },
+    {
+      id: 2,
+      title: 'Problèmes logistiques',
+      description:
+        'Difficultés dans la distribution des ressources aux régions éloignées.',
+      direction: 'Direction Logistique', // Nouvelle propriété pour la direction
+      status: { name: 'difficults', label: 'Difficultés' },
+      date: '2024-08-03',
+    },
+    {
+      id: 3,
+      title: 'Négociation avec les syndicats',
+      description:
+        'Enjeu de maintenir la paix sociale dans un contexte de revendications.',
+      direction: 'Direction Sociale', // Nouvelle propriété pour la direction
+      status: { name: 'challenges', label: 'Enjeux' },
+      date: '2024-08-05',
+    },
+    {
+      id: 4,
+      title: 'Coordination entre les ministères',
+      description:
+        'Mise en place d’un Projet de coordination pour améliorer l’efficacité gouvernementale.',
+      direction: 'Direction Coordination', // Nouvelle propriété pour la direction
+      status: { name: 'coordinationPoint', label: 'En cours' },
+      date: '2024-08-07',
+    },
+    {
+      id: 5,
+      title: 'Réunion avec les partenaires internationaux',
+      description: 'Discussion sur les projets de coopération en cours.',
+      direction: 'Direction Internationale', // Nouvelle propriété pour la direction
+      status: { name: 'difficults', label: 'Réalisés' },
+      date: '2024-08-01',
+    },
+    {
+      id: 6,
+      title: 'Réunion avec les partenaires internationaux',
+      description: 'Discussion sur les projets de coopération en cours.',
+      direction: 'Direction Internationale', // Nouvelle propriété pour la direction
+      status: { name: 'difficults', label: 'Réalisés' },
+      date: '2024-08-01',
+    },
+    {
+      id: 7,
+      title: 'Réunion avec les partenaires internationaux',
+      description: 'Discussion sur les projets de coopération en cours.',
+      direction: 'Direction Internationale', // Nouvelle propriété pour la direction
+      status: { name: 'difficults', label: 'Réalisés' },
+      date: '2024-08-01',
+    },
+  ];
 
   const getHightlight = () => {
-    getHightlightData(
-      selectedWeek?.split('-')[0],
-      selectedWeek?.split('-')[1],
-      ofms.id,
-      setHighlights,
-      setError
-    );
+    // Remplacer l'appel API par des données simulées
+    setHighlights(simulatedData);
   };
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setRole(sessionStorage.getItem('role'));
-    }
-    getHightlight();
-    getValuesDataOfms();
-  }, [selectedWeek]);
-
-  const openHightlightModal = () => {
-    getHightlightStatus(null, setHighlightStatus, setError);
-    setCurrentWeekList([getCurrentWeek(), getLastWeek()]);
-    onOpenFm();
+  //Initialise Data
+  const initDmgpData = {
+    OM: 10,
+    seddo: null,
+    wave: null,
+    another: null,
+    //Add Another vars dor values data
+    caMobile: 10,
+    deltaCaMobileVsObj: null,
+    variationCaMobile: null,
+    //Add Parc Mobile
+    parcMobile: null,
+    deltaParcVsObj: null,
+    variationParcMobile: null,
+    //Add Ca Fixe
+    caFixe: null,
+    deltaCaFixeVsObj: null,
+    variationCaFixe: null,
+    //Add CA Fibre
+    caFibre: null,
+    deltaCaFibreVsObj: null,
+    variationCaFiber: null,
+    //Add  Parc Fixe
+    parcFixeCommercial: null,
+    deltaParcFixeCommercialVsObj: null,
+    variationParcCommercial: null,
+    parcFixeFacture: null,
+    variationParcFacture: null,
+    parcFibreFtthGP: null,
+    deltaParcFibreFtthGPVsObj: null,
+    variationParcFibreFtthGP: null,
+    parcFibreFtthGlobal: null,
+    deltaParcFibreFtthGlobalGPVsObj: null,
+    variationParcFibreFtthGlobal: null,
+    //Add Data Mobile
+    caDataMobile: null,
+    variationCaDataMobile: null,
+    parc4G: null,
+    variationParc4G: null,
+    percentageTraffic4G: null,
+    variationTraffic4G: null,
   };
 
-  const newHightlight = () => {
-    setSelectedHighlight(null);
-    openHightlightModal();
-  };
+  const [data, setData] = useState(initDmgpData);
 
-  const openHightlight = (highligh) => {
-    setSelectedHighlight(highligh);
-    openHightlightModal();
-  };
-
-  const onDMenuChange = (value) => {
-    if (value == 'hightlight') return newHightlight();
-    if (value === 'validate') return onOpenVal();
-    if (value === 'copy-hightlight') onCopyOpen();
-  };
-
-  const initData = {
+  const initOfmsData = {
     //CaOfms Dto
     caOfmsWeek: null,
     caOfmsWeekVsObjectiveCaOfmsWeek: null,
@@ -151,22 +221,6 @@ export default function OfmsPage(props) {
     variationCaOfmsMonthToDate: null,
     caOfmsYear: null,
     variationCaOfmsYear: null,
-    //Parc ofms
-    parcActive: null,
-    parcActiveVsObj: null,
-    variationParcActiveWeek: null,
-    variationParcActiveFourWeek: null,
-    parcRegistered: null,
-    parcRegisteredVsObj: null,
-    variationRegisteredWeek: null,
-    variationParcRegisteredFourWeek: null,
-    //Transactions
-    volumeWeek: null,
-    variationVolumeWeek: null,
-    variationVolumeFourWeek: null,
-    valueWeek: null,
-    variationValueWeek: null,
-    variationValueFourWeek: null,
     //Commissions
     commissionWeek: null,
     variationCommissionWeek: null,
@@ -183,14 +237,62 @@ export default function OfmsPage(props) {
     variationMargeMonth: null,
     margeYear: null,
     variationMargeYear: null,
+    //Les Parcs
+    parcActive: null,
+    parcActiveVsObj: null,
+    variationParcActiveWeek: null,
+    variationParcActiveFourWeek: null,
+    parcRegistered: null,
+    parcRegisteredVsObj: null,
+    variationRegisteredWeek: null,
+    variationParcRegisteredFourWeek: null,
   };
 
-  //Initialise Data
-  const [data, setData] = useState(initData);
+  const [dataofms, setDataOfms] = useState(initOfmsData);
 
-  //Handle Click function for View More
-  const handleViewMoreClick = () => {
-    router.push('/ofms/transaction/');
+  //Add Data DV
+  const initDvData = {
+    value_gross_add_fibre: null,
+    valueVsObjective_gross_add_fibre: null,
+    valueVariationWeek_gross_add_fibre: null,
+    valueCsat: null,
+    valueVariationWeekCsat: null,
+    valueVsObjectiveCsat: null,
+  };
+  const [datadv, setDataDv] = useState(initDvData);
+
+  //Appel de getDmgpDta
+
+  const getValuesData = () => {
+    setData(initDmgpData);
+  };
+
+  const getValuesDataDv = () => {
+    const params =
+      'week=' +
+      selectedWeek?.split('-')[0] +
+      '&year=' +
+      selectedWeek?.split('-')[1];
+    getElement('v1/direction-data/data-dv?' + params)
+      .then((res) => {
+        if (res.data) {
+          setDataDv({
+            value_gross_add_fibre: res.data?.value_gross_add_fibre,
+            valueVsObjective_gross_add_fibre:
+              res.data?.valueVsObjective_gross_add_fibre,
+            valueVariationWeek_gross_add_fibre:
+              res.data?.valueVariationWeek_gross_add_fibre,
+
+            valueCsat: res.data?.valueCsat,
+            valueVariationWeekCsat: res.data?.valueVariationWeekCsat,
+            valueVsObjectiveCsat: res.data?.valueVsObjectiveCsat,
+          });
+        } else setData(initDvData);
+      })
+      .catch((error) => {
+        setData(initDvData);
+        //console.log('Error ::: ', error);
+      });
   };
 
   const getValuesDataOfms = () => {
@@ -202,7 +304,7 @@ export default function OfmsPage(props) {
     getElement('v1/direction-data/data-ofms?' + params)
       .then((res) => {
         if (res?.data) {
-          setData({
+          setDataOfms({
             //Ca Ofms
             caOfmsWeek: res.data?.caOFMSDto.caOfmsWeek,
             caOfmsWeekVsObjectiveCaOfmsWeek:
@@ -213,29 +315,6 @@ export default function OfmsPage(props) {
               res.data?.caOFMSDto.variationCaOfmsMonthToDate,
             caOfmsYear: res.data?.caOFMSDto.caOfmsYear,
             variationCaOfmsYear: res.data?.caOFMSDto.variationCaOfmsYear,
-            //Parc Ofms
-            parcActive: res.data?.parcOFMSDto.parcActive,
-            parcActiveVsObj: res.data?.parcOFMSDto.parcActiveVsObj,
-            variationParcActiveWeek:
-              res.data?.parcOFMSDto.variationParcActiveWeek,
-            variationParcActiveFourWeek:
-              res.data?.parcOFMSDto.variationParcActiveFourWeek,
-            parcRegistered: res.data?.parcOFMSDto.parcRegistered,
-            parcRegisteredVsObj: res.data?.parcOFMSDto.parcRegisteredVsObj,
-            variationRegisteredWeek:
-              res.data?.parcOFMSDto.variationRegisteredWeek,
-            variationParcRegisteredFourWeek:
-              res.data?.parcOFMSDto.variationParcRegisteredFourWeek,
-            //Transactions
-            volumeWeek: res.data?.transactionOFMsDto.volumeWeek,
-            variationVolumeWeek:
-              res.data?.transactionOFMsDto.variationVolumeWeek,
-            variationVolumeFourWeek:
-              res.data?.transactionOFMsDto.variationVolumeFourWeek,
-            valueWeek: res.data?.transactionOFMsDto.valueWeek,
-            variationValueWeek: res.data?.transactionOFMsDto.variationValueWeek,
-            variationValueFourWeek:
-              res.data?.transactionOFMsDto.variationValueFourWeek,
             //Commissions
             commissionWeek: res.data?.commissionOFMSDto.commissionWeek,
             variationCommissionWeek:
@@ -258,102 +337,181 @@ export default function OfmsPage(props) {
             variationMargeMonth: res.data?.margeOFMSDto.variationMargeMonth,
             margeYear: res.data?.margeOFMSDto.margeYear,
             variationMargeYear: res.data?.margeOFMSDto.variationMargeYear,
+            //parcs
+            //Parc Ofms
+            parcActive: res.data?.parcOFMSDto.parcActive,
+            parcActiveVsObj: res.data?.parcOFMSDto.parcActiveVsObj,
+            variationParcActiveWeek:
+              res.data?.parcOFMSDto.variationParcActiveWeek,
+            variationParcActiveFourWeek:
+              res.data?.parcOFMSDto.variationParcActiveFourWeek,
+
+            parcRegistered: res.data?.parcOFMSDto.parcRegistered,
+            parcRegisteredVsObj: res.data?.parcOFMSDto.parcRegisteredVsObj,
+            variationRegisteredWeek:
+              res.data?.parcOFMSDto.variationRegisteredWeek,
+            variationParcRegisteredFourWeek:
+              res.data?.parcOFMSDto.variationParcRegisteredFourWeek,
           });
-        } else {
-          setData(initData);
-        }
+        } else setData(initOfmsData);
       })
       .catch((error) => {
-        setData(initData);
-        console.log('Error :::: ', error);
+        setData(initOfmsData);
+        //console.log('Error :::', error);
       });
+  };
+
+  console.log('Parc Telco .....', dataofms.parcRegisteredVsObj);
+
+  const backColor = ['#1bc28a', '#a3a3ff', '#34c997', '#adadff'];
+
+  const DataCaMobile = [
+    {
+      id: 1,
+      part: 'Projet 1',
+      percent: 10,
+    },
+    {
+      id: 2,
+      part: 'Projet 2',
+      percent: 20,
+    },
+    {
+      id: 3,
+      part: 'Projet 3',
+      percent: 20,
+    },
+    {
+      id: 4,
+      part: 'Autres',
+      percent: 50,
+    },
+  ];
+
+  const ParcDataMobile = [
+    {
+      id: 1,
+      part: 'Projet 1',
+      percent: 30,
+    },
+    {
+      id: 2,
+      part: 'Projet 2',
+      percent: 20,
+    },
+    {
+      id: 3,
+      part: 'Projet 3',
+      percent: 40,
+    },
+    {
+      id: 4,
+      part: 'Projet 4',
+      percent: 10,
+    },
+  ];
+
+  const CaFixe = [
+    {
+      id: 1,
+      part: 'Fibre',
+      percent: data.fibre,
+    },
+    {
+      id: 2,
+      part: 'Autres',
+      percent: data.another_offre,
+    },
+  ];
+
+  const data_ = {
+    labels: DataCaMobile?.map((item) => item.part),
+    datasets: [
+      {
+        barThickness: DataCaMobile?.map((item) =>
+          isNaN(item.percent) ? 0.1 : 18
+        ),
+        barPercentage: 0,
+        label: 'Nbre de vistes',
+        data: DataCaMobile?.map((item) =>
+          isNaN(item.percent) ? 0.1 : item.percent
+        ),
+        backgroundColor: backColor,
+      },
+    ],
+  };
+
+  const data_ParcMobile = {
+    labels: ParcDataMobile?.map((item) => item.part),
+    datasets: [
+      {
+        barThickness: ParcDataMobile?.map((item) =>
+          isNaN(item.percent) ? 0.1 : 18
+        ),
+        barPercentage: 0,
+        label: 'Pourcentage',
+        data: ParcDataMobile?.map((item) =>
+          isNaN(item.percent) ? 0.1 : item.percent
+        ),
+        backgroundColor: backColor,
+      },
+    ],
+  };
+
+  useEffect(() => {
+    getHightlight();
+    getValuesData();
+    getValuesDataDv();
+    getValuesDataOfms();
+  }, [selectedWeek]);
+
+  const onDMenuChange = (value) => {
+    if (value === 'validate') return onOpenVal();
+    if (value == 'hightlight') newHightlight();
+    if (value == 'data') router.push('dashboard/form/' + selectedWeek);
+    if (value == 'copy-hightlight') onCopyOpen();
   };
 
   const displayHighlight = (highligh, i) => (
     <HightlightContent
       key={i}
-      title={highligh?.direction?.name + ' • ' + highligh?.title}
-      body={highligh?.textHighlight}
-      iconBgColor={
-        highlightStatusStyle(highligh?.status?.name)?.style.iconColor
-      }
-      date={moment(highligh?.createdAt).format('DD-MM-YYYY')}
-      bgColor={highlightStatusStyle(highligh?.status?.name)?.style.bgColor}
-      icon={highlightStatusStyle(highligh?.status?.name)?.icon}
-      openHightlight={() => openHightlight(highligh)}
+      title={`${highligh.direction} • ${highligh.title}`}
+      body={highligh.description}
+      iconBgColor={highlightStatusStyle(highligh.status?.name)?.style.iconColor}
+      date={moment(highligh.date).format('DD-MM-YYYY')}
+      bgColor={highlightStatusStyle(highligh.status?.name)?.style.bgColor}
+      icon={highlightStatusStyle(highligh.status?.name)?.icon}
     />
   );
 
   return (
     <DashboardLayout activeMenu={'account-ofms'}>
-      <HighlightModal
-        onOpen={onOpenFm}
-        onClose={onCloseFm}
-        isOpen={isOpenFm}
-        weekListOption={currentWeekList}
-        highlightStatus={highlightStatus}
-        setSelectedWeek={setSelectedWeek}
-        selectedWeek={selectedWeek}
-        getHightlight={getHightlight}
-        direction={ofms}
-        selectedHighlight={selectedHighlight}
-      />
-      <ValidationModal
-        onOpen={onOpenVal}
-        onClose={onCloseVal}
-        isOpen={isOpenVal}
-        direction={ofms}
-        week={selectedWeek}
-      />
-
-      <CopyHighlightModal
-        onOpen={onCopyOpen}
-        onClose={onCopyClose}
-        isOpen={isCopyOpen}
-        weekListOption={currentWeekList}
-        setSelectedWeek={setSelectedWeek}
-        selectedWeek={selectedWeek}
-        direction={ofms}
-        getHightlight={getHightlight}
-      />
-      <Flex mt={3} px={2} w={'100%'} mb={0}>
+      <Flex mt={10} px={2} w={'100%'} mb={0}>
         <Box>
           <PageTitle
             titleSize={17}
             titleColor={'black'}
             subtitleColor={'gray'}
             subtitleSize={14}
-            icon={ofms.icon}
-            title={ofms.label}
-            subtitle={' / ' + ofms.description}
+            icon={<AiFillHome fontSize={24} color="white" />}
+            title={'Primature'}
+            subtitle={'/ Dashboard Section Gouvernance'}
           />
         </Box>
         <Spacer />
         <Box mr={2}>
-          {role && !role.includes('codir') && (
             <DMenuButton
               onChange={onDMenuChange}
-              name={'Nouvelle taches'}
+              name={'Effectuer une action'}
               rightIcon={<BsPlusLg />}
               menus={[
                 {
-                  icon: <FaCheck />,
-                  value: 'validate',
-                  label: 'Valider',
-                },
-                {
                   icon: <BsPlusLg />,
-                  value: 'hightlight',
-                  label: 'Nouveau fait marquant',
-                },
-                {
-                  icon: <FaCopy />,
-                  value: 'copy-hightlight',
-                  label: 'Copier une semaine',
+                  value: 'data',
+                  label: 'Remplir un formulaire',
                 },
               ]}
             />
-          )}
         </Box>
         <ListSemaineItem
           onWeekSelect={setSelectedWeek}
@@ -361,602 +519,92 @@ export default function OfmsPage(props) {
         />
       </Flex>
 
-      <Stack w={'100%'} p={3}>
+      <Stack p={3} mt={6} w={'100%'}>
         <Grid
           templateRows="repeat(5, 1fr)"
           templateColumns="repeat(4, 1fr)"
           gap={2}
-          h={gstyle.h * 6 + 'px'}
-          mb={6}
+          h={'1340px'}
         >
-          {/* First row */}
           <GridItem
-            rowSpan={2}
+            rowSpan={1}
             colSpan={2}
             bg={gstyle.bg}
             p={gstyle.p}
             borderRadius={gstyle.radius}
           >
-            {/* Content for CA Mobile (MTD) */}
+            {/* Content for Chiffre d'affaires */}
             <Box>
-              <TagTitle title={"Chiffres d'affaires"} size={16} />
+              <TagTitle title={'IGE'} size={16} />
             </Box>
-            <Divider mt={2} mb={2} />
-            {valueGetZero(data.caOfmsWeek) ? (
-              <HStack justifyContent={'space-between'} alignItems="center">
-                <Box>
-                  <ValuesData
-                    tagName={'Hebdo'}
-                    full_value={formaterNumber(
-                      data.caOfmsWeek,
-                      18,
-                      '#ffffff',
-                      600
-                    )}
-                    value={abreviateNumberWithXof(
-                      data.caOfmsWeek,
-                      22,
-                      16,
-                      '',
-                      700,
-                      600
-                    )}
-                    iconType={data.variationCaOfmsWeek > 0 ? 'up' : 'down'}
-                    delta={
-                      data.caOfmsWeekVsObjectiveCaOfmsWeek > 0
-                        ? {
-                            value: abreviateNumberWithXof(
-                              data.caOfmsWeekVsObjectiveCaOfmsWeek,
-                              12,
-                              12,
-                              colors.colorBadge.green.green_600,
-                              600,
-                              600
-                            ),
-                            label: titles.title.label.obj,
-                            valueColor: colors.colorBadge.green.green_600,
-                          }
-                        : {
-                            value: abreviateNumberWithXof(
-                              data.caOfmsWeekVsObjectiveCaOfmsWeek,
-                              12,
-                              12,
-                              colors.colorBadge.red.red_600,
-                              600,
-                              600
-                            ),
-                            label: titles.title.label.obj,
-                            valueColor: colors.colorBadge.red.red_600,
-                          }
-                    }
-                    lastVal={
-                      data.variationCaOfmsWeek > 0
-                        ? {
-                            value: numberWithBadge(
-                              data.variationCaOfmsWeek,
-                              12,
-                              12,
-                              colors.colorBadge.green.green_600,
-                              600,
-                              700
-                            ),
-                            label: titles.title.label.s1,
-                          }
-                        : {
-                            value: numberWithBadge(
-                              data.variationCaOfmsWeek,
-                              12,
-                              12,
-                              colors.colorBadge.red.red_600,
-                              600,
-                              700
-                            ),
-                            label: titles.title.label.s1,
-                          }
-                    }
-                  />
-                </Box>
-
-                <Box h={'15vh'}>
-                  <Divider
-                    orientation="vertical"
-                    ml={5}
-                    mr={5}
-                    borderWidth={'1px'}
-                    borderColor={'#ebedf2'}
-                  />
-                </Box>
-                <Box>
-                  <ValuesData
-                    tagName={'Mensuel'}
-                    full_value={formaterNumber(
-                      data.caOfmsMonthToDate,
-                      18,
-                      '#ffffff',
-                      600
-                    )}
-                    value={abreviateNumberWithXof(
-                      data.caOfmsMonthToDate,
-                      22,
-                      16,
-                      '',
-                      700,
-                      600
-                    )}
-                    iconType={
-                      data.variationCaOfmsMonthToDate > 0 ? 'up' : 'down'
-                    }
-                    lastVal={
-                      data.variationCaOfmsMonthToDate > 0
-                        ? {
-                            value: numberWithBadge(
-                              data.variationCaOfmsMonthToDate,
-                              12,
-                              12,
-                              colors.colorBadge.green.green_600,
-                              600,
-                              600
-                            ),
-                            label: titles.title.label.m1,
-                            valueColor: colors.colorBadge.green.green_600,
-                          }
-                        : {
-                            value: numberWithBadge(
-                              data.variationCaOfmsMonthToDate,
-                              12,
-                              12,
-                              colors.colorBadge.red.red_600,
-                              600,
-                              600
-                            ),
-                            label: titles.title.label.m1,
-                            valueColor: colors.colorBadge.red.red_600,
-                          }
-                    }
-                  />
-                </Box>
-                <Box h={'15vh'}>
-                  <Divider
-                    orientation="vertical"
-                    ml={5}
-                    mr={5}
-                    borderWidth={'1px'}
-                    borderColor={'#ebedf2'}
-                  />
-                </Box>
-                <Box>
-                  <ValuesData
-                    tagName={'Annuel'}
-                    full_value={formaterNumber(
-                      data.caOfmsYear,
-                      18,
-                      '#ffffff',
-                      600
-                    )}
-                    value={abreviateNumberWithXof(
-                      data.caOfmsYear,
-                      22,
-                      16,
-                      '',
-                      700,
-                      600
-                    )}
-                    iconType={data.variationCaOfmsYear > 0 ? 'up' : 'down'}
-                    lastVal={
-                      data.variationCaOfmsYear > 0
-                        ? {
-                            value: numberWithBadge(
-                              data.variationCaOfmsYear,
-                              12,
-                              12,
-                              colors.colorBadge.green.green_600,
-                              600,
-                              700
-                            ),
-                            label: titles.title.label.y1,
-                          }
-                        : {
-                            value: numberWithBadge(
-                              data.variationCaOfmsYear,
-                              12,
-                              12,
-                              colors.colorBadge.red.red_600,
-                              600,
-                              700
-                            ),
-                            label: titles.title.label.y1,
-                          }
-                    }
-                  />
-                </Box>
+            <Divider mt={3} mb={2} />
+            <HStack justifyContent={'space-between'} alignItems="center">
+              <HStack justifyContent={'space-between'}>
+                <ValuesData
+                  tagName="Projet 1"
+                  iconType="up"
+                  value={6000}
+                  unit="Gxof"
+                  delta={{
+                    label: 'Last Year',
+                    value: '+5%',
+                    valueColor: '#02bc7d',
+                  }}
+                />
+                <GiCash size={24} color='#9999ff' />
               </HStack>
-            ) : (
-              <DataUnavailable
-                message={titles.title.label.dataunavailable}
-                paddingY={0}
-                marginTop={1}
-                SizeIcon={40}
-              />
-            )}
-            <Divider mt={2} />
-            <Box h={'60%'}>
-              <RefactoringStackedBarChart selectedWeek={selectedWeek} />
-            </Box>
-          </GridItem>
 
-          <GridItem
-            rowSpan={1}
-            colSpan={1}
-            bg={gstyle.bg}
-            p={gstyle.p}
-            borderRadius={gstyle.radius}
-          >
-            {/* Content for Répartition (en %) */}
-            <Box>
-              <TagTitle title={'Parc Actfis'} size={16} />
-            </Box>
-            <Divider mt={2} />
-            {valueGetZero(data.parcRegistered) &&
-            valueGetZero(data.parcActive) ? (
-              <>
-                <Box>
-                  <ValuesData
-                    tagName="Parc actifs"
-                    full_value={formaterNumber(
-                      data.parcActive,
-                      18,
-                      '#ffffff',
-                      600
-                    )}
-                    value={formaterNumber(data.parcActive, 22)}
-                    iconType={data.variationParcActiveWeek > 0 ? 'up' : 'down'}
-                    delta={
-                      data.parcActiveVsObj > 0
-                        ? {
-                            value: formaterNumber(
-                              data.parcActiveVsObj,
-                              12,
-                              12,
-                              colors.colorBadge.green.green_600,
-                              600,
-                              600
-                            ),
-                            label: titles.title.label.obj,
-                            valueColor: colors.colorBadge.green.green_600,
-                          }
-                        : {
-                            value: formaterNumber(
-                              data.parcActiveVsObj,
-                              12,
-                              12,
-                              colors.colorBadge.red.red_600,
-                              600
-                            ),
-                            label: titles.title.label.obj,
-                            valueColor: colors.colorBadge.red.red_600,
-                          }
-                    }
-                    lastVal={
-                      data.variationParcActiveWeek > 0
-                        ? {
-                            value: numberWithBadge(
-                              data.variationParcActiveWeek,
-                              12,
-                              12,
-                              colors.colorBadge.green.green_600,
-                              600,
-                              700
-                            ),
-                            label: titles.title.label.s1,
-                          }
-                        : {
-                            value: numberWithBadge(
-                              data.variationParcActiveWeek,
-                              12,
-                              12,
-                              colors.colorBadge.red.red_600,
-                              600,
-                              700
-                            ),
-                            label: titles.title.label.s1,
-                          }
-                    }
-                    lastVal2={
-                      data.variationParcActiveFourWeek > 0
-                        ? {
-                            value: numberWithBadge(
-                              data.variationParcActiveFourWeek,
-                              12,
-                              12,
-                              colors.colorBadge.green.green_600,
-                              600,
-                              700
-                            ),
-                            label: '/ ' + 'S-4',
-                          }
-                        : {
-                            value: numberWithBadge(
-                              data.variationParcActiveFourWeek,
-                              12,
-                              12,
-                              colors.colorBadge.red.red_600,
-                              600,
-                              700
-                            ),
-                            label: '/ ' + 'S-4',
-                          }
-                    }
-                  />
-                </Box>
-                <Divider mt={2} />
-                <Box>
-                  <ValuesData
-                    tagName="Parc inscrits"
-                    full_value={formaterNumber(
-                      data.parcRegistered,
-                      18,
-                      '#ffffff',
-                      600
-                    )}
-                    value={formaterNumber(data.parcRegistered, 22)}
-                    iconType={data.variationRegisteredWeek > 0 ? 'up' : 'down'}
-                    delta={
-                      data.parcRegisteredVsObj > 0
-                        ? {
-                            value: formaterNumber(
-                              data.parcRegisteredVsObj,
-                              12,
-                              colors.colorBadge.green.green_600,
-                              600
-                            ),
-                            label: titles.title.label.obj,
-                          }
-                        : {
-                            value: formaterNumber(
-                              data.parcRegisteredVsObj,
-                              12,
-                              colors.colorBadge.red.red_600,
-                              600
-                            ),
-                            label: titles.title.label.obj,
-                          }
-                    }
-                    lastVal={
-                      data.variationRegisteredWeek > 0
-                        ? {
-                            value: numberWithBadge(
-                              data.variationRegisteredWeek,
-                              12,
-                              12,
-                              colors.colorBadge.green.green_600,
-                              600,
-                              700,
-                              colors.colorBadge.red.red_transparent
-                            ),
-                            label: titles.title.label.s1,
-                          }
-                        : {
-                            value: numberWithBadge(
-                              data.variationRegisteredWeek,
-                              12,
-                              12,
-                              colors.colorBadge.red.red_600,
-                              600,
-                              700
-                            ),
-                            label: titles.title.label.s1,
-                          }
-                    }
-                    lastVal2={
-                      data.variationParcRegisteredFourWeek > 0
-                        ? {
-                            value: numberWithBadge(
-                              data.variationParcRegisteredFourWeek,
-                              12,
-                              12,
-                              colors.colorBadge.green.green_600,
-                              600,
-                              700
-                            ),
-                            label: '/ ' + 'S-4',
-                          }
-                        : {
-                            value: numberWithBadge(
-                              data.variationParcRegisteredFourWeek,
-                              12,
-                              12,
-                              colors.colorBadge.red.red_600,
-                              600,
-                              700
-                            ),
-                            label: '/ ' + 'S-4',
-                          }
-                    }
-                  />
-                </Box>
-              </>
-            ) : (
-              <DataUnavailable
-                message={titles.title.label.dataunavailable}
-                marginTop={2}
-                paddingY={10}
-                SizeIcon={40}
-              />
-            )}
-          </GridItem>
-
-          <GridItem
-            rowSpan={1}
-            colSpan={1}
-            bg={gstyle.bg}
-            p={gstyle.p}
-            borderRadius={gstyle.radius}
-          >
-            <HStack justifyContent={'space-between'}>
-              <TagTitle title={'Transactions'} size={16} />
-
-              <Text
-                textColor={'teal.500'}
-                fontWeight={'normal'}
-                onClick={handleViewMoreClick}
-                cursor="pointer"
-              >
-                Voir Plus
-              </Text>
+              <Box h={'15vh'}>
+                <Divider
+                  orientation="vertical"
+                  ml={5}
+                  mr={5}
+                  borderWidth={'1px'}
+                  borderColor={'#ebedf2'}
+                />
+              </Box>
+              <Box>
+              <HStack justifyContent={'space-between'}>
+                <ValuesData
+                  tagName="Projet 2"
+                  iconType="up"
+                  value={6000}
+                  unit="Gxof"
+                  delta={{
+                    label: 'Last Year',
+                    value: '+5%',
+                    valueColor: '#02bc7d',
+                  }}
+                />
+                <GiCash size={24} color='#9999ff' />
+              </HStack>
+              </Box>
+              <Box h={'15vh'}>
+                <Divider
+                  orientation="vertical"
+                  ml={5}
+                  mr={5}
+                  borderWidth={'1px'}
+                  borderColor={'#ebedf2'}
+                />
+              </Box>
+              <Box>
+              <HStack justifyContent={'space-between'}>
+                <ValuesData
+                  tagName="Projet 3"
+                  iconType="up"
+                  value={6000}
+                  unit="Gxof"
+                  delta={{
+                    label: 'Last Year',
+                    value: '+5%',
+                    valueColor: '#02bc7d',
+                  }}
+                />
+                <GiCash size={24} color='#9999ff' />
+              </HStack>
+              </Box>
             </HStack>
-            <Divider mt={2} />
-            {valueGetZero(data.valueWeek) && valueGetZero(data.volumeWeek) ? (
-              <>
-                <Box>
-                  <ValuesData
-                    tagName="Volume"
-                    full_value={formaterNumber(
-                      data.volumeWeek,
-                      18,
-                      '#ffffff',
-                      600
-                    )}
-                    value={abreviateNumberWithoutXof(
-                      data.volumeWeek,
-                      22,
-                      16,
-                      '',
-                      700,
-                      600
-                    )}
-                    iconType={data.variationVolumeWeek > 0 ? 'up' : 'down'}
-                    lastVal={
-                      data.variationVolumeWeek > 0
-                        ? {
-                            value: numberWithBadge(
-                              data.variationVolumeWeek,
-                              12,
-                              12,
-                              colors.colorBadge.green.green_600,
-                              600,
-                              700
-                            ),
-                            label: titles.title.label.s1,
-                          }
-                        : {
-                            value: numberWithBadge(
-                              data.variationVolumeWeek,
-                              12,
-                              12,
-                              colors.colorBadge.red.red_600,
-                              600,
-                              700
-                            ),
-                            label: titles.title.label.s1,
-                          }
-                    }
-                    lastVal2={
-                      data.variationVolumeFourWeek > 0
-                        ? {
-                            value: numberWithBadge(
-                              data.variationVolumeFourWeek,
-                              12,
-                              12,
-                              colors.colorBadge.green.green_600,
-                              600,
-                              700
-                            ),
-                            label: '/ ' + 'S-4',
-                          }
-                        : {
-                            value: numberWithBadge(
-                              data.variationVolumeFourWeek,
-                              12,
-                              12,
-                              colors.colorBadge.red.red_600,
-                              600,
-                              700
-                            ),
-                            label: '/ ' + 'S-4',
-                          }
-                    }
-                  />
-                </Box>
-                <Divider mt={2} />
-                <Box>
-                  <ValuesData
-                    tagName="Valeur"
-                    full_value={formaterNumber(
-                      data.valueWeek,
-                      18,
-                      '#ffffff',
-                      600
-                    )}
-                    value={abreviateNumberWithXof(
-                      data.valueWeek,
-                      22,
-                      16,
-                      '',
-                      700,
-                      600
-                    )}
-                    iconType={data.variationValueWeek > 0 ? 'up' : 'down'}
-                    lastVal={
-                      data.variationValueWeek > 0
-                        ? {
-                            value: numberWithBadge(
-                              data.variationValueWeek,
-                              12,
-                              12,
-                              colors.colorBadge.green.green_600,
-                              600,
-                              700
-                            ),
-                            label: titles.title.label.s1,
-                          }
-                        : {
-                            value: numberWithBadge(
-                              data.variationValueWeek,
-                              12,
-                              12,
-                              colors.colorBadge.red.red_600,
-                              600,
-                              700
-                            ),
-                            label: titles.title.label.s1,
-                          }
-                    }
-                    lastVal2={
-                      data.variationValueFourWeek > 0
-                        ? {
-                            value: numberWithBadge(
-                              data.variationValueFourWeek,
-                              12,
-                              12,
-                              colors.colorBadge.green.green_600,
-                              600,
-                              700
-                            ),
-                            label: '/ ' + 'S-4',
-                          }
-                        : {
-                            value: numberWithBadge(
-                              data.variationValueFourWeek,
-                              12,
-                              12,
-                              colors.colorBadge.red.red_600,
-                              600,
-                              700
-                            ),
-                            label: '/ ' + 'S-4',
-                          }
-                    }
-                  />
-                </Box>{' '}
-              </>
-            ) : (
-              <DataUnavailable
-                message={titles.title.label.dataunavailable}
-                marginTop={1}
-                paddingY={10}
-                SizeIcon={40}
-              />
-            )}
           </GridItem>
 
           <GridItem
@@ -966,410 +614,338 @@ export default function OfmsPage(props) {
             p={gstyle.p}
             borderRadius={gstyle.radius}
           >
+            {/* Content for Chiffre d'affaires */}
             <Box>
-              <TagTitle title={'Commissions'} size={14} />
+              <TagTitle title={'Cos P&G'} size={16} />
             </Box>
-            <Divider mt={2} mb={2} />
-            {valueGetZero(data.commissionWeek) ? (
-              <HStack justifyContent={'space-between'} alignItems="center">
-                <Box>
-                  <ValuesData
-                    tagName="Hebdo"
-                    full_value={formaterNumber(
-                      data.commissionWeek,
-                      18,
-                      '#ffffff',
-                      600
-                    )}
-                    value={abreviateNumberWithXof(
-                      data.commissionWeek,
-                      22,
-                      16,
-                      '',
-                      700,
-                      600
-                    )}
-                    iconType={data.variationCommissionWeek > 0 ? 'up' : 'down'}
-                    lastVal={
-                      data.variationCommissionWeek > 0
-                        ? {
-                            value: numberWithBadge(
-                              data.variationCommissionWeek,
-                              12,
-                              12,
-                              colors.colorBadge.green.green_600,
-                              600,
-                              700
-                            ),
-                            label: titles.title.label.s1,
-                          }
-                        : {
-                            value: numberWithBadge(
-                              data.variationCommissionWeek,
-                              12,
-                              12,
-                              colors.colorBadge.red.red_600,
-                              600,
-                              700
-                            ),
-                            label: titles.title.label.s1,
-                          }
-                    }
-                    lastVal2={
-                      data.variationCommissionWeekFour > 0
-                        ? {
-                            value: numberWithBadge(
-                              data.variationCommissionWeekFour,
-                              12,
-                              12,
-                              colors.colorBadge.green.green_600,
-                              600,
-                              700
-                            ),
-                            label: '/ ' + 'S-4',
-                          }
-                        : {
-                            value: numberWithBadge(
-                              data.variationCommissionWeekFour,
-                              12,
-                              12,
-                              colors.colorBadge.red.red_600,
-                              600,
-                              700
-                            ),
-                            label: '/ ' + 'S-4',
-                          }
-                    }
-                  />
-                </Box>
-
-                <Box h={'15vh'}>
-                  <Divider
-                    orientation="vertical"
-                    ml={5}
-                    mr={5}
-                    borderWidth={'1px'}
-                    borderColor={'#ebedf2'}
-                  />
-                </Box>
-                <Box>
-                  <ValuesData
-                    tagName="Mensuel"
-                    full_value={formaterNumber(
-                      data.commissionMonthToDate,
-                      18,
-                      '#ffffff',
-                      600
-                    )}
-                    value={abreviateNumberWithXof(
-                      data.commissionMonthToDate,
-                      22,
-                      16,
-                      '',
-                      700,
-                      600
-                    )}
-                    iconType={
-                      data.variationCommissionMonthToDate > 0 ? 'up' : 'down'
-                    }
-                    lastVal={
-                      data.variationCommissionMonthToDate > 0
-                        ? {
-                            value: numberWithBadge(
-                              data.variationCommissionMonthToDate,
-                              12,
-                              12,
-                              colors.colorBadge.green.green_600,
-                              600,
-                              700
-                            ),
-                            label: titles.title.label.m1,
-                          }
-                        : {
-                            value: numberWithBadge(
-                              data.variationCommissionMonthToDate,
-                              12,
-                              12,
-                              colors.colorBadge.red.red_600,
-                              600,
-                              700
-                            ),
-                            label: titles.title.label.m1,
-                          }
-                    }
-                  />
-                </Box>
-                <Box h={'15vh'}>
-                  <Divider
-                    orientation="vertical"
-                    ml={5}
-                    mr={5}
-                    borderWidth={'1px'}
-                    borderColor={'#ebedf2'}
-                  />
-                </Box>
-                <Box>
-                  <ValuesData
-                    tagName="Annuel"
-                    full_value={formaterNumber(
-                      data.commissionYear,
-                      18,
-                      '#ffffff',
-                      600
-                    )}
-                    value={abreviateNumberWithXof(
-                      data.commissionYear,
-                      22,
-                      16,
-                      '',
-                      700,
-                      600
-                    )}
-                    iconType={data.commissionYear > 0 ? 'up' : 'down'}
-                    lastVal={
-                      data.commissionYear > 0
-                        ? {
-                            value: numberWithBadge(
-                              data.variationCommissionYear,
-                              12,
-                              12,
-                              colors.colorBadge.green.green_600,
-                              600,
-                              700
-                            ),
-                            label: titles.title.label.y1,
-                          }
-                        : {
-                            value: numberWithBadge(
-                              data.variationCommissionYear,
-                              12,
-                              12,
-                              colors.colorBadge.red.red_600,
-                              600,
-                              700
-                            ),
-                            label: titles.title.label.y1,
-                          }
-                    }
-                  />
-                </Box>
+            <Divider mt={3} mb={2} />
+            <HStack justifyContent={'space-between'} alignItems="center">
+              <HStack justifyContent={'space-between'}>
+                <ValuesData
+                  tagName="Projet 1"
+                  iconType="up"
+                  value={6000}
+                  unit="Gxof"
+                  delta={{
+                    label: 'Last Year',
+                    value: '+5%',
+                    valueColor: '#02bc7d',
+                  }}
+                />
+                <GiCash size={24} color='#9999ff' />
               </HStack>
-            ) : (
-              <DataUnavailable
-                message={titles.title.label.dataunavailable}
-                marginTop={1}
-                paddingY={10}
-                SizeIcon={40}
-              />
-            )}
-          </GridItem>
 
-          <GridItem
-            rowSpan={1}
-            colSpan={2}
-            bg={gstyle.bg}
-            borderRadius={gstyle.radius}
-            p={gstyle.p}
-          >
-            <Box>
-              <TagTitle title={'Marges'} size={14} />
-            </Box>
-            <Divider mt={2} mb={2} />
-            {valueGetZero(data.margeWeek) ? (
-              <HStack justifyContent={'space-between'} alignItems="center">
-                <Box>
-                  <ValuesData
-                    tagName="Hebdo"
-                    full_value={formaterNumber(
-                      data.margeWeek,
-                      18,
-                      '#ffffff',
-                      600
-                    )}
-                    value={numberWithBadge(
-                      data.margeWeek,
-                      22,
-                      16,
-                      '',
-                      700,
-                      600
-                    )}
-                    iconType={data.variationMargeWeek > 0 ? 'up' : 'down'}
-                    lastVal={
-                      data.variationMargeWeek > 0
-                        ? {
-                            value: numberWithBadgeMarge(
-                              data.variationMargeWeek,
-                              12,
-                              12,
-                              colors.colorBadge.green.green_600,
-                              600,
-                              600
-                            ),
-                            label: titles.title.label.s1,
-                          }
-                        : {
-                            value: numberWithBadgeMarge(
-                              data.variationMargeWeek,
-                              12,
-                              12,
-                              colors.colorBadge.red.red_600,
-                              600,
-                              600
-                            ),
-                            label: titles.title.label.s1,
-                          }
-                    }
-                    lastVal2={
-                      data.variationMargeWeekFour > 0
-                        ? {
-                            value: numberWithBadgeMarge(
-                              data.variationMargeWeekFour,
-                              12,
-                              12,
-                              colors.colorBadge.green.green_600,
-                              600,
-                              600
-                            ),
-                            label: '/ ' + 'S-4',
-                          }
-                        : {
-                            value: numberWithBadgeMarge(
-                              data.variationMargeWeekFour,
-                              12,
-                              12,
-                              colors.colorBadge.red.red_600,
-                              600,
-                              600
-                            ),
-                            label: '/ ' + 'S-4',
-                          }
-                    }
-                  />
-                </Box>
-
-                <Box h={'15vh'}>
-                  <Divider
-                    orientation="vertical"
-                    ml={5}
-                    mr={5}
-                    borderWidth={'1px'}
-                    borderColor={'#ebedf2'}
-                  />
-                </Box>
-                <Box>
-                  <ValuesData
-                    tagName="Mensuel"
-                    full_value={formaterNumber(
-                      data.margeMonth,
-                      18,
-                      '#ffffff',
-                      600
-                    )}
-                    value={numberWithBadge(
-                      data.margeMonth,
-                      22,
-                      16,
-                      '',
-                      700,
-                      600
-                    )}
-                    iconType={data.variationMargeMonth > 0 ? 'up' : 'down'}
-                    lastVal={
-                      data.variationMargeMonth > 0
-                        ? {
-                            value: numberWithBadgeMarge(
-                              data.variationMargeMonth,
-                              12,
-                              12,
-                              colors.colorBadge.green.green_600,
-                              600,
-                              600
-                            ),
-                            label: titles.title.label.m1,
-                          }
-                        : {
-                            value: numberWithBadgeMarge(
-                              data.variationMargeMonth,
-                              12,
-                              12,
-                              colors.colorBadge.red.red_600,
-                              600,
-                              600
-                            ),
-                            label: titles.title.label.m1,
-                          }
-                    }
-                  />
-                </Box>
-                <Box h={'15vh'}>
-                  <Divider
-                    orientation="vertical"
-                    ml={5}
-                    mr={5}
-                    borderWidth={'1px'}
-                    borderColor={'#ebedf2'}
-                  />
-                </Box>
-                <Box>
-                  <ValuesData
-                    tagName="Annuel"
-                    full_value={formaterNumber(
-                      data.margeYear,
-                      18,
-                      '#ffffff',
-                      600
-                    )}
-                    value={numberWithBadge(
-                      data.margeYear,
-                      22,
-                      16,
-                      '',
-                      700,
-                      600
-                    )}
-                    iconType={data.variationMargeYear > 0 ? 'up' : 'down'}
-                    lastVal={
-                      data.variationMargeYear > 0
-                        ? {
-                            value: numberWithBadgeMarge(
-                              data.variationMargeYear,
-                              12,
-                              12,
-                              colors.colorBadge.green.green_600,
-                              600,
-                              600
-                            ),
-                            label: titles.title.label.y1,
-                          }
-                        : {
-                            value: numberWithBadgeMarge(
-                              data.variationMargeYear,
-                              12,
-                              12,
-                              colors.colorBadge.red.red_600,
-                              600,
-                              600
-                            ),
-                            label: titles.title.label.y1,
-                          }
-                    }
-                  />
-                </Box>
+              <Box h={'15vh'}>
+                <Divider
+                  orientation="vertical"
+                  ml={5}
+                  mr={5}
+                  borderWidth={'1px'}
+                  borderColor={'#ebedf2'}
+                />
+              </Box>
+              <Box>
+              <HStack justifyContent={'space-between'}>
+                <ValuesData
+                  tagName="Projet 2"
+                  iconType="up"
+                  value={6000}
+                  unit="Gxof"
+                  delta={{
+                    label: 'Last Year',
+                    value: '+5%',
+                    valueColor: '#02bc7d',
+                  }}
+                />
+                <GiCash size={24} color='#9999ff' />
               </HStack>
-            ) : (
-              <DataUnavailable
-                message={titles.title.label.dataunavailable}
-                marginTop={1}
-                paddingY={10}
-                SizeIcon={40}
-              />
-            )}
+              </Box>
+              <Box h={'15vh'}>
+                <Divider
+                  orientation="vertical"
+                  ml={5}
+                  mr={5}
+                  borderWidth={'1px'}
+                  borderColor={'#ebedf2'}
+                />
+              </Box>
+              <Box>
+              <HStack justifyContent={'space-between'}>
+                <ValuesData
+                  tagName="Projet 3"
+                  iconType="up"
+                  value={6000}
+                  unit="Gxof"
+                  delta={{
+                    label: 'Last Year',
+                    value: '+5%',
+                    valueColor: '#02bc7d',
+                  }}
+                />
+                <GiCash size={24} color='#9999ff' />
+              </HStack>
+              </Box>
+            </HStack>
           </GridItem>
-
           <GridItem
-            h={'100%'}
             rowSpan={3}
+            bg={gstyle.bg}
+            p={gstyle.p}
+            borderRadius={gstyle.radius}
+          >
+            <Box>
+              <TagTitle title={'Diplomatique'} size={16} />
+            </Box>
+            <Divider mt={2} />
+            <>
+              <Box>
+                <ValuesData
+                  tagName="Nombres de visites"
+                  full_value={formaterNumber(6000, 18, '#ffffff', 600)}
+                  value={formaterNumber(6000, 22, 16, '', 700, 600)}
+                  iconType={data.variationCaMobile > 0 ? 'up' : 'down'}
+                  lastVal={
+                    data.variationCaMobile > 0
+                      ? {
+                          value: abreviateNumberWithXofWithBadge(
+                            data.variationCaMobile,
+                            12,
+                            colors.colorBadge.green.green_600,
+                            600,
+                            700
+                          ),
+                          label: titles.title.label.m1,
+                          valueColor: colors.colorBadge.green.green_600,
+                        }
+                      : {
+                          value: abreviateNumberWithXofWithBadge(
+                            data.variationCaMobile,
+                            12,
+                            colors.colorBadge.red.red_600,
+                            600,
+                            700
+                          ),
+                          label: titles.title.label.m1,
+                          valueColor: colors.colorBadge.red.red_600,
+                        }
+                  }
+                />
+              </Box>
+              <Divider mt={3} mb={2} />
+              <Box h={'55%'} w={'98%'}>
+                <HorizontalBarChart chartData={data_} />
+              </Box>
+            </>
+          </GridItem>
+          <GridItem
+            rowSpan={3}
+            bg={gstyle.bg}
+            p={gstyle.p}
+            borderRadius={gstyle.radius}
+          >
+            <Box>
+              <TagTitle title={'Socio-Economique'} size={16} />
+            </Box>
+            <Divider mt={2} />
+
+            <>
+              <Box>
+                <ValuesData
+                  tagName="Projet de BES"
+                  full_value={formaterNumber(
+                    data.parcMobile,
+                    18,
+                    '#ffffff',
+                    600
+                  )}
+                  value={formaterNumber(data.parcMobile, 22)}
+                  iconType={data.variationParcMobile > 0 ? 'up' : 'down'}
+                  lastVal={
+                    data.variationParcMobile > 0
+                      ? {
+                          value: formaterNumberWithBadge(
+                            data.variationParcMobile,
+                            12,
+                            colors.colorBadge.green.green_600,
+                            600
+                          ),
+                          label: titles.title.label.s1,
+                          valueColor: colors.colorBadge.green.green_600,
+                        }
+                      : {
+                          value: formaterNumberWithBadge(
+                            data.variationParcMobile,
+                            12,
+                            colors.colorBadge.red.red_600,
+                            600
+                          ),
+                          label: titles.title.label.s1,
+                        }
+                  }
+                />
+              </Box>
+              <Divider mt={3} />
+              <Box h={'55%'} w={'98%'}>
+                <HorizontalBarChart2 chartData={data_ParcMobile} />
+              </Box>
+            </>
+          </GridItem>
+          <GridItem
+            rowSpan={3}
+            bg={gstyle.bg}
+            p={gstyle.p}
+            borderRadius={gstyle.radius}
+          >
+            <Box>
+              <TagTitle title={'Gestion Administrative'} size={16} />
+            </Box>
+            <Divider mt={2} />
+
+            <>
+              <Box>
+                <ValuesData
+                  tagName="Taux d'execution budgétaire"
+                  full_value={formaterNumber(
+                    data.parcMobile,
+                    18,
+                    '#ffffff',
+                    600
+                  )}
+                  value={formaterNumber(data.parcMobile, 22)}
+                  iconType={data.variationParcMobile > 0 ? 'up' : 'down'}
+                  lastVal={
+                    data.variationParcMobile > 0
+                      ? {
+                          value: formaterNumberWithBadge(
+                            data.variationParcMobile,
+                            12,
+                            colors.colorBadge.green.green_600,
+                            600
+                          ),
+                          label: titles.title.label.s1,
+                          valueColor: colors.colorBadge.green.green_600,
+                        }
+                      : {
+                          value: formaterNumberWithBadge(
+                            data.variationParcMobile,
+                            12,
+                            colors.colorBadge.red.red_600,
+                            600
+                          ),
+                          label: titles.title.label.s1,
+                        }
+                  }
+                />
+              </Box>
+              <Divider mt={3} />
+              <Box h={'70%'} w={'100%'}>
+                <PieCharts chartData={data_ParcMobile} />
+              </Box>
+            </>
+          </GridItem>
+          <GridItem
+            rowSpan={3}
+            bg={gstyle.bg}
+            p={gstyle.p}
+            borderRadius={gstyle.radius}
+          >
+            <Box>
+              <TagTitle title={'Sécurité Nationale'} size={16} />
+            </Box>
+            <Divider mt={2} />
+
+            <>
+              <Box>
+                <ValuesData
+                  tagName="Projet de SN"
+                  full_value={formaterNumber(
+                    data.parcMobile,
+                    18,
+                    '#ffffff',
+                    600
+                  )}
+                  value={formaterNumber(data.parcMobile, 22)}
+                  iconType={data.variationParcMobile > 0 ? 'up' : 'down'}
+                  lastVal={
+                    data.variationParcMobile > 0
+                      ? {
+                          value: formaterNumberWithBadge(
+                            data.variationParcMobile,
+                            12,
+                            colors.colorBadge.green.green_600,
+                            600
+                          ),
+                          label: titles.title.label.s1,
+                          valueColor: colors.colorBadge.green.green_600,
+                        }
+                      : {
+                          value: formaterNumberWithBadge(
+                            data.variationParcMobile,
+                            12,
+                            colors.colorBadge.red.red_600,
+                            600
+                          ),
+                          label: titles.title.label.s1,
+                        }
+                  }
+                />
+              </Box>
+              <Divider mt={3} />
+              <Box h={'70%'} w={'100%'}>
+                <PieCharts2 chartData={data_ParcMobile} />
+              </Box>
+            </>
+          </GridItem>
+
+          <GridItem
+            colSpan={2}
+            bg={gstyle.bg}
+            p={gstyle.p}
+            borderRadius={gstyle.radius}
+          >
+            {/* Content for CA Recharge/Obj(Gxof) */}
+            <Box>
+              <TagTitle
+                title={
+                  'Evolution des Projets Réalisés par rapport aux objectfis'
+                }
+                size={16}
+              />
+            </Box>
+            <Divider mb={3} mt={3} />
+
+            <Box>
+              <TabsPanelItem
+                fSize={'12px'}
+                w1={'100%'}
+                h1={'100%'}
+                title1={'Projets Réalisées Vs Obj.'}
+                tab1={<LineChartsParcOM />}
+                w2={'100%'}
+                h2={'100%'}
+                title2={'Projets Réalisées Vs Obj.'}
+                tab2={<LineChartsParcOM />}
+                w3={'100%'}
+                h3={'100%'}
+                title3={'Projets Réalisées Vs Obj.'}
+                tab3={<LineChartsParcOM />}
+              />
+            </Box>
+            <Box>
+              <TabsPanelItem
+                fSize={'12px'}
+                w1={'100%'}
+                h1={'100%'}
+                title1={'Projets Réalisées Vs Obj.'}
+                tab1={<LineChartsParcOM />}
+                w2={'100%'}
+                h2={'100%'}
+                title2={'Projets Réalisées Vs Obj.'}
+                tab2={<LineChartsParcOM />}
+              />
+            </Box>
+          </GridItem>
+          <GridItem
             colSpan={2}
             bg={gstyle.bg}
             p={gstyle.p}
@@ -1377,9 +953,10 @@ export default function OfmsPage(props) {
             overflowY="auto"
             css={scroll_customize}
           >
-            <Stack mt={3}>
+            <Stack mt={0}>
               <HightlightHeader status={DefaultHighlightstatus} />
             </Stack>
+
             <Divider mb={3} mt={3} />
             <HStack mb={3} justifyContent={'space-between'}>
               <Box>
@@ -1391,7 +968,7 @@ export default function OfmsPage(props) {
                     onChange={(e) => setSelectedStatus(e.target.value)}
                   >
                     <option key="all" value="all">
-                      Tous les status
+                      Tous les objectifs mensuels
                     </option>
                     {statusList.map((option, index) => (
                       <option key={index} value={option.name}>
@@ -1403,61 +980,12 @@ export default function OfmsPage(props) {
               </Box>
             </HStack>
             <Stack mt={2}>
-              {(selectedStatus == 'all' || selectedStatus == 'realizes') &&
-                highlights
-                  ?.filter((h) => h.status?.name == 'realizes')
-                  .map((highligh, i) => displayHighlight(highligh, i))}
-              {(selectedStatus == 'all' || selectedStatus == 'difficults') &&
-                highlights
-                  ?.filter((h) => h.status?.name == 'difficults')
-                  .map((highligh, i) => displayHighlight(highligh, i))}
-              {(selectedStatus == 'all' || selectedStatus == 'challenges') &&
-                highlights
-                  ?.filter((h) => h.status?.name == 'challenges')
-                  .map((highligh, i) => displayHighlight(highligh, i))}
-              {(selectedStatus == 'all' ||
-                selectedStatus == 'coordinationPoint') &&
-                highlights
-                  ?.filter((h) => h.status?.name == 'coordinationPoint')
-                  .map((highligh, i) => displayHighlight(highligh, i))}
+              {simulatedData.map((highlight, i) =>
+                displayHighlight(highlight, i)
+              )}
             </Stack>
           </GridItem>
-
-          <GridItem
-            colSpan={2}
-            h={'100%'}
-            rowSpan={2}
-            p={gstyle.p}
-            bg={gstyle.bg}
-            borderRadius={gstyle.radius}
-          >
-            <Box>
-              <TagTitle title={"Evolution du Chiffre d'affaires"} size={16} />
-            </Box>
-            <Divider mb={2} mt={3} />
-            <Box>
-              <TabsPanelItem
-                title1={'Commissions vs Marges vs OM'}
-                fSize={'12px'}
-                w1={'100%'}
-                h1={'350px'}
-                tab1={
-                  <LineChartRefactoring
-                    selectedWeek={selectedWeek}
-                    title="Commission"
-                    title_="Marge"
-                    title3="OM"
-                    bgColorDs1="#38c172"
-                    bdColorDs1="#38c172"
-                    bgColorDs2="#dc3030"
-                    bdColorDs2="#dc3030"
-                    bgColorDs3="#ff7900"
-                    bdColorDs3="#ff7900"
-                  />
-                }
-              />
-            </Box>
-          </GridItem>
+          {/* Second row */}
         </Grid>
       </Stack>
     </DashboardLayout>

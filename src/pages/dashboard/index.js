@@ -14,6 +14,7 @@ import {
   Heading,
   Select,
   Text,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { ValuesData } from '@components/common/data/values';
 import { TagTitle } from '@components/common/title';
@@ -33,6 +34,7 @@ import { useEffect, useState } from 'react';
 
 import { scroll_customize } from '@components/common/styleprops';
 import { AiFillHome } from 'react-icons/ai';
+import { GiCash } from 'react-icons/gi';
 import moment from 'moment';
 import {
   DefaultHighlightstatus,
@@ -69,6 +71,10 @@ import {
   LineChartsParcOM,
 } from '@components/common/charts/linecharts';
 import { PieCharts, PieCharts2 } from '@components/common/charts/piecharts';
+import { DMenuButton } from '@components/common/menu_button';
+import { useRouter } from 'next/router';
+import { BsPlusLg } from 'react-icons/bs';
+import { FaFileExcel, FaCheck, FaCopy } from 'react-icons/fa';
 
 export default function Dashboard(props) {
   const [highlights, setHighlights] = useState([]);
@@ -81,6 +87,18 @@ export default function Dashboard(props) {
   const statusList = [realizes, difficults, challenges, coordinationPoint];
 
   const gstyle = gird.style;
+
+  const {
+    onOpen: onOpenFm,
+    isOpen: isOpenFm,
+    onClose: onCloseFm,
+  } = useDisclosure();
+  const {
+    onOpen: onOpenVal,
+    isOpen: isOpenVal,
+    onClose: onCloseVal,
+  } = useDisclosure();
+  const router = useRouter();
 
   const simulatedData = [
     {
@@ -123,7 +141,7 @@ export default function Dashboard(props) {
       title: 'Réunion avec les partenaires internationaux',
       description: 'Discussion sur les projets de coopération en cours.',
       direction: 'Direction Internationale', // Nouvelle propriété pour la direction
-      status: { name: 'realizes', label: 'Réalisés' },
+      status: { name: 'difficults', label: 'Réalisés' },
       date: '2024-08-01',
     },
     {
@@ -131,7 +149,7 @@ export default function Dashboard(props) {
       title: 'Réunion avec les partenaires internationaux',
       description: 'Discussion sur les projets de coopération en cours.',
       direction: 'Direction Internationale', // Nouvelle propriété pour la direction
-      status: { name: 'realizes', label: 'Réalisés' },
+      status: { name: 'difficults', label: 'Réalisés' },
       date: '2024-08-01',
     },
     {
@@ -139,15 +157,7 @@ export default function Dashboard(props) {
       title: 'Réunion avec les partenaires internationaux',
       description: 'Discussion sur les projets de coopération en cours.',
       direction: 'Direction Internationale', // Nouvelle propriété pour la direction
-      status: { name: 'realizes', label: 'Réalisés' },
-      date: '2024-08-01',
-    },
-    {
-      id: 8,
-      title: 'Réunion avec les partenaires internationaux',
-      description: 'Discussion sur les projets de coopération en cours.',
-      direction: 'Direction Internationale', // Nouvelle propriété pour la direction
-      status: { name: 'realizes', label: 'Réalisés' },
+      status: { name: 'difficults', label: 'Réalisés' },
       date: '2024-08-01',
     },
   ];
@@ -353,20 +363,22 @@ export default function Dashboard(props) {
 
   console.log('Parc Telco .....', dataofms.parcRegisteredVsObj);
 
+  const backColor = ['#1bc28a', '#a3a3ff', '#34c997', '#adadff'];
+
   const DataCaMobile = [
     {
       id: 1,
-      part: 'Indice1',
+      part: 'Plan 1',
       percent: 10,
     },
     {
       id: 2,
-      part: 'Indice2',
+      part: 'Plan 2',
       percent: 20,
     },
     {
       id: 3,
-      part: 'Indice3',
+      part: 'Plan 3',
       percent: 20,
     },
     {
@@ -379,22 +391,22 @@ export default function Dashboard(props) {
   const ParcDataMobile = [
     {
       id: 1,
-      part: 'Indice1',
+      part: 'Plan 1',
       percent: 30,
     },
     {
       id: 2,
-      part: 'Indice2',
+      part: 'Plan 2',
       percent: 20,
     },
     {
       id: 3,
-      part: 'Indice3',
+      part: 'Plan 3',
       percent: 40,
     },
     {
       id: 4,
-      part: 'Indice4',
+      part: 'Plan 4',
       percent: 10,
     },
   ];
@@ -424,7 +436,7 @@ export default function Dashboard(props) {
         data: DataCaMobile?.map((item) =>
           isNaN(item.percent) ? 0.1 : item.percent
         ),
-        backgroundColor: ['#4bc0c0', '#4bc0c0', '#4bc0c0', '#4bc0c0'],
+        backgroundColor: backColor,
       },
     ],
   };
@@ -441,7 +453,7 @@ export default function Dashboard(props) {
         data: ParcDataMobile?.map((item) =>
           isNaN(item.percent) ? 0.1 : item.percent
         ),
-        backgroundColor: ['#4bc0c0', '#329e9e', '#2f8f8f', '#3b8686'],
+        backgroundColor: backColor,
       },
     ],
   };
@@ -452,6 +464,13 @@ export default function Dashboard(props) {
     getValuesDataDv();
     getValuesDataOfms();
   }, [selectedWeek]);
+
+  const onDMenuChange = (value) => {
+    if (value === 'validate') return onOpenVal();
+    if (value == 'hightlight') newHightlight();
+    if (value == 'data') router.push('dashboard/form/' + selectedWeek);
+    if (value == 'copy-hightlight') onCopyOpen();
+  };
 
   const displayHighlight = (highligh, i) => (
     <HightlightContent
@@ -476,10 +495,24 @@ export default function Dashboard(props) {
             subtitleSize={14}
             icon={<AiFillHome fontSize={24} color="white" />}
             title={'Présidence'}
-            subtitle={'/ Dashboard Conseil Présidentiel'}
+            subtitle={'/ Dashboard Section SGPR'}
           />
         </Box>
         <Spacer />
+        <Box mr={2}>
+            <DMenuButton
+              onChange={onDMenuChange}
+              name={'Effectuer une action'}
+              rightIcon={<BsPlusLg />}
+              menus={[
+                {
+                  icon: <BsPlusLg />,
+                  value: 'data',
+                  label: 'Remplir un formulaire',
+                },
+              ]}
+            />
+        </Box>
         <ListSemaineItem
           onWeekSelect={setSelectedWeek}
           selectedWeek={selectedWeek}
@@ -502,48 +535,24 @@ export default function Dashboard(props) {
           >
             {/* Content for Chiffre d'affaires */}
             <Box>
-              <TagTitle title={'Gestion de Crise'} size={16} />
+              <TagTitle title={'BOM'} size={16} />
             </Box>
             <Divider mt={3} mb={2} />
             <HStack justifyContent={'space-between'} alignItems="center">
-              <Box>
+              <HStack justifyContent={'space-between'}>
                 <ValuesData
-                  tagName="TRC"
-                  full_value={formaterNumber(
-                    dataofms.parcActive,
-                    18,
-                    '#ffffff',
-                    600
-                  )}
-                  value={formaterNumber(dataofms.parcActive, 22)}
-                  iconType={dataofms.variationParcActiveWeek > 0 ? 'up' : 'up'}
-                  lastVal={
-                    dataofms.variationParcActiveWeek > 0
-                      ? {
-                          value: numberWithBadge(
-                            data.variationParcActiveWeek,
-                            12,
-                            12,
-                            colors.colorBadge.green.green_600,
-                            600,
-                            700
-                          ),
-                          label: titles.title.label.s1,
-                        }
-                      : {
-                          value: numberWithBadge(
-                            dataofms.variationParcActiveWeek,
-                            12,
-                            12,
-                            colors.colorBadge.green.green_600,
-                            600,
-                            700
-                          ),
-                          label: titles.title.label.s1,
-                        }
-                  }
+                  tagName="Plan 1"
+                  iconType="up"
+                  value={6000}
+                  unit="Gxof"
+                  delta={{
+                    label: 'Last Year',
+                    value: '+5%',
+                    valueColor: '#02bc7d',
+                  }}
                 />
-              </Box>
+                <GiCash size={24} color='#9999ff' />
+              </HStack>
 
               <Box h={'15vh'}>
                 <Divider
@@ -555,42 +564,20 @@ export default function Dashboard(props) {
                 />
               </Box>
               <Box>
+              <HStack justifyContent={'space-between'}>
                 <ValuesData
-                  tagName="Taux RPC"
-                  full_value={formaterNumber(
-                    dataofms.parcRegistered,
-                    18,
-                    '#ffffff',
-                    600
-                  )}
-                  value={formaterNumber(dataofms.parcRegistered, 22)}
-                  iconType={dataofms.variationRegisteredWeek > 0 ? 'up' : 'up'}
-                  lastVal={
-                    dataofms.variationRegisteredWeek > 0
-                      ? {
-                          value: numberWithBadge(
-                            dataofms.variationRegisteredWeek,
-                            12,
-                            12,
-                            colors.colorBadge.green.green_600,
-                            600,
-                            700
-                          ),
-                          label: titles.title.label.s1,
-                        }
-                      : {
-                          value: numberWithBadge(
-                            dataofms.variationRegisteredWeek,
-                            12,
-                            12,
-                            colors.colorBadge.green.green_600,
-                            600,
-                            700
-                          ),
-                          label: titles.title.label.s1,
-                        }
-                  }
+                  tagName="Plan 2"
+                  iconType="up"
+                  value={6000}
+                  unit="Gxof"
+                  delta={{
+                    label: 'Last Year',
+                    value: '+5%',
+                    valueColor: '#02bc7d',
+                  }}
                 />
+                <GiCash size={24} color='#9999ff' />
+              </HStack>
               </Box>
               <Box h={'15vh'}>
                 <Divider
@@ -602,40 +589,20 @@ export default function Dashboard(props) {
                 />
               </Box>
               <Box>
+              <HStack justifyContent={'space-between'}>
                 <ValuesData
-                  tagName="SCSU"
-                  full_value={formaterNumber(
-                    data.parcFibreFtthGP,
-                    18,
-                    '#ffffff',
-                    600
-                  )}
-                  value={formaterNumber(data.parcFibreFtthGP, 22)}
-                  iconType={data.variationParcFibreFtthGP > 0 ? 'up' : 'down'}
-                  lastVal={
-                    data.variationParcFibreFtthGP > 0
-                      ? {
-                          value: formaterNumberWithBadge(
-                            data.variationParcFibreFtthGP,
-                            12,
-                            colors.colorBadge.green.green_600,
-                            600
-                          ),
-                          label: titles.title.label.m1,
-                          valueColor: colors.colorBadge.green.green_600,
-                        }
-                      : {
-                          value: formaterNumberWithBadge(
-                            data.variationParcFibreFtthGP,
-                            12,
-                            colors.colorBadge.red.red_600,
-                            600
-                          ),
-                          label: titles.title.label.m1,
-                          valueColor: colors.colorBadge.red.red_600,
-                        }
-                  }
+                  tagName="Plan 3"
+                  iconType="up"
+                  value={6000}
+                  unit="Gxof"
+                  delta={{
+                    label: 'Last Year',
+                    value: '+5%',
+                    valueColor: '#02bc7d',
+                  }}
                 />
+                <GiCash size={24} color='#9999ff' />
+              </HStack>
               </Box>
             </HStack>
           </GridItem>
@@ -644,60 +611,29 @@ export default function Dashboard(props) {
             rowSpan={1}
             colSpan={2}
             bg={gstyle.bg}
-            borderRadius={gstyle.radius}
             p={gstyle.p}
+            borderRadius={gstyle.radius}
           >
-            {/* Content for Part de marché (en %) */}
+            {/* Content for Chiffre d'affaires */}
             <Box>
-              <TagTitle title={'Indices Environnementaux'} size={14} />
+              <TagTitle title={'CPMP'} size={16} />
             </Box>
-            <Divider mt={3} mb={1} />
+            <Divider mt={3} mb={2} />
             <HStack justifyContent={'space-between'} alignItems="center">
-              <Box>
+              <HStack justifyContent={'space-between'}>
                 <ValuesData
-                  tagName={'Taux Emission CO2'}
-                  full_value={formaterNumber(
-                    dataofms.caOfmsWeek,
-                    18,
-                    '#ffffff',
-                    600
-                  )}
-                  value={abreviateNumberWithXof(
-                    dataofms.caOfmsWeek,
-                    22,
-                    16,
-                    '',
-                    700,
-                    600
-                  )}
-                  iconType={dataofms.variationCaOfmsWeek > 0 ? 'up' : 'up'}
-                  lastVal={
-                    dataofms.variationCaOfmsWeek > 0
-                      ? {
-                          value: numberWithBadge(
-                            dataofms.variationCaOfmsWeek,
-                            12,
-                            12,
-                            colors.colorBadge.green.green_600,
-                            600,
-                            700
-                          ),
-                          label: titles.title.label.s1,
-                        }
-                      : {
-                          value: numberWithBadge(
-                            dataofms.variationCaOfmsWeek,
-                            12,
-                            12,
-                            colors.colorBadge.green.green_600,
-                            600,
-                            700
-                          ),
-                          label: titles.title.label.s1,
-                        }
-                  }
+                  tagName="Projet 1"
+                  iconType="up"
+                  value={6000}
+                  unit="Gxof"
+                  delta={{
+                    label: 'Last Year',
+                    value: '+5%',
+                    valueColor: '#02bc7d',
+                  }}
                 />
-              </Box>
+                <GiCash size={24} color='#9999ff' />
+              </HStack>
 
               <Box h={'15vh'}>
                 <Divider
@@ -709,51 +645,20 @@ export default function Dashboard(props) {
                 />
               </Box>
               <Box>
+              <HStack justifyContent={'space-between'}>
                 <ValuesData
-                  tagName={'Taux ER'}
-                  full_value={formaterNumber(
-                    dataofms.caOfmsMonthToDate,
-                    18,
-                    '#ffffff',
-                    600
-                  )}
-                  value={abreviateNumberWithXof(
-                    dataofms.caOfmsMonthToDate,
-                    22,
-                    16,
-                    '',
-                    700,
-                    600
-                  )}
-                  iconType={
-                    dataofms.variationCaOfmsMonthToDate < 0 ? 'down' : 'up'
-                  }
-                  lastVal={
-                    dataofms.variationCaOfmsYear < 0
-                      ? {
-                          value: numberWithBadge(
-                            dataofms.variationCaOfmsYear,
-                            12,
-                            12,
-                            colors.colorBadge.green.green_600,
-                            600,
-                            700
-                          ),
-                          label: titles.title.label.y1,
-                        }
-                      : {
-                          value: numberWithBadge(
-                            dataofms.variationCaOfmsYear,
-                            12,
-                            12,
-                            colors.colorBadge.green.green_600,
-                            600,
-                            700
-                          ),
-                          label: titles.title.label.y1,
-                        }
-                  }
+                  tagName="Projet 2"
+                  iconType="up"
+                  value={6000}
+                  unit="Gxof"
+                  delta={{
+                    label: 'Last Year',
+                    value: '+5%',
+                    valueColor: '#02bc7d',
+                  }}
                 />
+                <GiCash size={24} color='#9999ff' />
+              </HStack>
               </Box>
               <Box h={'15vh'}>
                 <Divider
@@ -765,49 +670,20 @@ export default function Dashboard(props) {
                 />
               </Box>
               <Box>
+              <HStack justifyContent={'space-between'}>
                 <ValuesData
-                  tagName={'Indice QAir'}
-                  full_value={formaterNumber(
-                    dataofms.caOfmsYear,
-                    18,
-                    '#ffffff',
-                    600
-                  )}
-                  value={abreviateNumberWithXof(
-                    dataofms.caOfmsYear,
-                    22,
-                    16,
-                    '',
-                    700,
-                    600
-                  )}
-                  iconType={dataofms.variationCaOfmsYear > 0 ? 'up' : 'down'}
-                  lastVal={
-                    dataofms.variationCaOfmsYear > 0
-                      ? {
-                          value: numberWithBadge(
-                            dataofms.variationCaOfmsYear,
-                            12,
-                            12,
-                            colors.colorBadge.green.green_600,
-                            600,
-                            700
-                          ),
-                          label: titles.title.label.y1,
-                        }
-                      : {
-                          value: numberWithBadge(
-                            dataofms.variationCaOfmsYear,
-                            12,
-                            12,
-                            colors.colorBadge.red.red_600,
-                            600,
-                            700
-                          ),
-                          label: titles.title.label.y1,
-                        }
-                  }
+                  tagName="Projet 3"
+                  iconType="up"
+                  value={6000}
+                  unit="Gxof"
+                  delta={{
+                    label: 'Last Year',
+                    value: '+5%',
+                    valueColor: '#02bc7d',
+                  }}
                 />
+                <GiCash size={24} color='#9999ff' />
+              </HStack>
               </Box>
             </HStack>
           </GridItem>
@@ -875,7 +751,7 @@ export default function Dashboard(props) {
             <>
               <Box>
                 <ValuesData
-                  tagName="Indice de BES"
+                  tagName="Plan de BES"
                   full_value={formaterNumber(
                     data.parcMobile,
                     18,
@@ -981,7 +857,7 @@ export default function Dashboard(props) {
             <>
               <Box>
                 <ValuesData
-                  tagName="Indice de SN"
+                  tagName="Plan de SN"
                   full_value={formaterNumber(
                     data.parcMobile,
                     18,
@@ -1021,7 +897,6 @@ export default function Dashboard(props) {
             </>
           </GridItem>
 
-          
           <GridItem
             colSpan={2}
             bg={gstyle.bg}
@@ -1030,7 +905,12 @@ export default function Dashboard(props) {
           >
             {/* Content for CA Recharge/Obj(Gxof) */}
             <Box>
-              <TagTitle title={'Evolution des Projets Réalisés par rapport aux objectfis'} size={16} />
+              <TagTitle
+                title={
+                  'Evolution des Projets Réalisés par rapport aux objectfis'
+                }
+                size={16}
+              />
             </Box>
             <Divider mb={3} mt={3} />
 
@@ -1073,7 +953,7 @@ export default function Dashboard(props) {
             overflowY="auto"
             css={scroll_customize}
           >
-            <Stack mt={3}>
+            <Stack mt={0}>
               <HightlightHeader status={DefaultHighlightstatus} />
             </Stack>
 

@@ -5,51 +5,56 @@ const {
   BsExclamationTriangleFill,
   BsMegaphoneFill,
 } = require('react-icons/bs');
-
+const {
+  FcOk
+} = require('react-icons/fc');
+const {
+  MdDoNotDisturbOn
+} = require('react-icons/md');
 module.exports = {
   name: 'Hightlight status',
   themeHightlightStatus: {
     realizes: {
       name: 'realizes',
       style: {
-        iconColor: '#32c832',
-        bgColor: hexToRgba('#32c832', 0.05),
+        statusColor:'#4caf50',
+        bgColor: hexToRgba('#9999ff', 0.05),
       },
-      icon: <BsFillHandThumbsUpFill />,
+      icon: <FcOk size={24} />,
       label: 'Réalisés',
     },
     difficults: {
       name: 'difficults',
       style: {
-        iconColor: '#cd3c14',
-        bgColor: hexToRgba('#cd3c14', 0.05),
+        statusColor:'#cd3c14',
+        bgColor: hexToRgba('#9999ff', 0.05),
       },
-      icon: <BsFillHandThumbsDownFill />,
+      icon: <MdDoNotDisturbOn color='#cd3c14' size={24} />,
       label: 'Difficultés',
     },
     challenges: {
       name: 'challenges',
       style: {
-        iconColor: '#ffb400',
-        bgColor: hexToRgba('#ffb400', 0.05),
+        statusColor:'#ffb400',
+        bgColor: hexToRgba('#9999ff', 0.05),
       },
-      icon: <BsExclamationTriangleFill />,
+      icon: <BsExclamationTriangleFill color='#ffb400' size={24} />,
       label: 'Enjeux',
     },
     coordinationPoint: {
       name: 'coordinationPoint',
       style: {
-        iconColor: '#4285f4',
+        statusColor:'#4285f4',
         bgColor: hexToRgba('#4285f4', 0.05),
       },
-      icon: <BsMegaphoneFill />,
+      icon: <BsMegaphoneFill color='#4285f4' size={20} />,
       label: 'En cours',
     },
     pointOfAttention: {
       name: 'pointOfAttention',
       style: {
         iconColor: '#b58b77',
-        bgColor: hexToRgba('#b58b77', 0.05),
+        bgColor: hexToRgba('#9999ff', 0.05),
       },
       icon: <BsMegaphoneFill />,
       label: "Point d'attention",
@@ -58,7 +63,7 @@ module.exports = {
       name: 'challengeInProgress',
       style: {
         iconColor: '#6c86a3',
-        bgColor: hexToRgba('#6c86a3', 0.05),
+        bgColor: hexToRgba('#9999ff', 0.05),
       },
       icon: <BsMegaphoneFill />,
       label: 'Challenge en cours',

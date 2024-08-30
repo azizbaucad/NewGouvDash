@@ -31,11 +31,13 @@ export const AuthenticationLayoutForm = ({
     >
       <Stack pb={{ base: 1, md: 10 }} w={'100%'}>
         <Heading
-          fontSize={{ base: 18, md: 24 }}
+          fontSize={{ base: 24, md: 34 }}
           textAlign={{ base: 'center', md: 'initial' }}
+          fontFamily="'Roboto Mono', sans-serif"
         >
           {title}
         </Heading>
+
         <VStack
           alignItems={{ base: 'center', md: 'initial' }}
           justifyContent={{ base: 'center', md: 'initial' }}
@@ -49,6 +51,7 @@ export const AuthenticationLayoutForm = ({
               mt={3}
               ml={1}
               textAlign={{ base: 'center', md: 'initial' }}
+              fontFamily="'Roboto Mono', sans-serif"
             >
               {subtitle}
             </Text>

@@ -23,7 +23,7 @@ export const DesktopLayoutView = ({ children }) => {
       <VStack
         alignItems={'center'}
         justifyContent={'center'}
-        bgColor={colors.secondary.regular}
+        bgColor={colors.secondary.newregular}
         h={'100%'}
         w={'50%'}
       >
@@ -40,7 +40,7 @@ export const DesktopLayoutView = ({ children }) => {
 
 export const MobileLayoutView = ({ children }) => {
   return (
-    <VStack bgColor={colors.secondary.regular} p={10} h={'100vh'} w={'100vw'}>
+    <VStack bgColor={colors.secondary.newregular} p={10} h={'100vh'} w={'100vw'}>
       <Box pos={'relative'} mb={20.01} minH={80.01} w={80.01}>
         <Image src={images.logo.src} fill alt={images.logo.alt} />
       </Box>

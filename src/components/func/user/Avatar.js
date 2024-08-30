@@ -24,7 +24,7 @@ export const AvatarMenu = () => {
     : session?.user?.name?.full;
 
   return (
-    <Box cursor={'pointer'} h={59} w={59} pos={'relative'} onClick={onToggle}>
+    <Box cursor={'pointer'} h={49} w={49} pos={'relative'} onClick={onToggle}>
       <Popover
         returnFocusOnClose
         isOpen={isOpen}

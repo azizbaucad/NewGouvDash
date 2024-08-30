@@ -11,6 +11,7 @@ export const RowTexts = ({ texts, color, params_value }) => {
       textDecoration={text.textDecoration}
       as="span"
       fontWeight={text.fontWeight}
+      fontFamily="'Roboto Mono', sans-serif"
     >
       {text.content}
     </Text>

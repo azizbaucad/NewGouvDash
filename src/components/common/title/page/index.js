@@ -18,6 +18,7 @@ export const PageTitle = ({
       pl: 1,
       color: titleColor,
       fontWeight: 'bold',
+      fontFamily:"'Roboto Mono', sans-serif",
     },
     {
       content: subtitle,
@@ -36,7 +37,7 @@ export const PageTitle = ({
       w={'100%'}
     >
       {/* <Box bg={'#00BD9C'} p={3} borderRadius={5}> */}
-      <Box bg={'#4bc0c0'} p={3} borderRadius={5}>
+      <Box bg={'#02bc7d'} p={3} borderRadius={5}>
         {icon}
       </Box>
       <Box
