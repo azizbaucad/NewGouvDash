@@ -100,7 +100,7 @@ export default function DigitalPage(props) {
           <PageTitle
             titleSize={17}
             titleColor={'black'}
-            subtitleColor={'gray'}
+            subtitleColor={'#404245'}
             subtitleSize={14}
             icon={digital.icon}
             title={digital.label}

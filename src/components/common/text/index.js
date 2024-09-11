@@ -21,7 +21,7 @@ export const RowTexts = ({ texts, color, params_value }) => {
       {texts?.map((text, i) =>
         text.displayToolstip ? (
           <Tooltip
-            bg="#454d57"
+            bg="#454d57" 
             label={text.full_content}
             hasArrow
             arrowSize={10}

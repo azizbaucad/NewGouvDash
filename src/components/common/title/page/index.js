@@ -25,6 +25,7 @@ export const PageTitle = ({
       fontSize: subtitleSize,
       pl: 1,
       color: subtitleColor,
+      fontFamily:"'Roboto Mono', sans-serif",
     },
   ];
 
@@ -32,24 +33,24 @@ export const PageTitle = ({
     <HStack
       alignItems={'center'}
       justifyContent={'center'}
-      borderRadius={8}
+      borderRadius={3}
       gap={0}
       w={'100%'}
     >
       {/* <Box bg={'#00BD9C'} p={3} borderRadius={5}> */}
-      <Box bg={'#02bc7d'} p={3} borderRadius={5}>
+      {/* <Box bg={'#9999ff'} p={3}> */}
         {icon}
-      </Box>
-      <Box
-        bg={colors.primary.white}
-        p={1}
-        pl={2}
-        pr={2}
+      {/* </Box> */}
+      {/* <Box
+        bg={'#f1f5f9'}
+        p={2}
+        
         borderRadius={5}
         borderStartRadius={0}
-      >
-        <RowTexts texts={texts} alignItems={'center'} />
-      </Box>
+      > */}
+      <Box p={2}> <RowTexts texts={texts} alignItems={'center'} /></Box>
+       
+      {/* </Box> */}
     </HStack>
   );
 };

@@ -49,7 +49,7 @@ export default function DescFormPage(props) {
           <PageTitle
             titleSize={17}
             titleColor={'black'}
-            subtitleColor={'gray'}
+            subtitleColor={'#404245'}
             subtitleSize={14}
             icon={desc.icon}
             title={desc.label}

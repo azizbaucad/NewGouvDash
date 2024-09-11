@@ -33,10 +33,10 @@ module.exports = {
     primary: {
       light: '#48bb78',
       regular: '#000',
-      regular_green_orange: '#02bc7d',
+      regular_green_orange: '#9999ff',
       gray_base: '#d7dce6',
       regular_orange: '#ff7900',
-      gray: '#f5f5f5',
+      gray: '#f1f5f9',
       white: '#fff',
       black: '#000',
       blackQuick: '#7c7c8f',

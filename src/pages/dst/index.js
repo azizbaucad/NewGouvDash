@@ -295,7 +295,7 @@ export default function DmgpPage(props) {
           <PageTitle
             titleSize={17}
             titleColor={'black'}
-            subtitleColor={'gray'}
+            subtitleColor={'#404245'}
             subtitleSize={14}
             icon={dst.icon}
             title={dst.label}

@@ -491,7 +491,7 @@ export default function Dashboard(props) {
           <PageTitle
             titleSize={17}
             titleColor={'black'}
-            subtitleColor={'gray'}
+            subtitleColor={'#404245'}
             subtitleSize={14}
             icon={<AiFillHome fontSize={24} color="white" />}
             title={'Présidence'}
@@ -548,7 +548,7 @@ export default function Dashboard(props) {
                   delta={{
                     label: 'Last Year',
                     value: '+5%',
-                    valueColor: '#02bc7d',
+                    valueColor: '#9999ff',
                   }}
                 />
                 <GiCash size={24} color='#9999ff' />
@@ -573,7 +573,7 @@ export default function Dashboard(props) {
                   delta={{
                     label: 'Last Year',
                     value: '+5%',
-                    valueColor: '#02bc7d',
+                    valueColor: '#9999ff',
                   }}
                 />
                 <GiCash size={24} color='#9999ff' />
@@ -598,7 +598,7 @@ export default function Dashboard(props) {
                   delta={{
                     label: 'Last Year',
                     value: '+5%',
-                    valueColor: '#02bc7d',
+                    valueColor: '#9999ff',
                   }}
                 />
                 <GiCash size={24} color='#9999ff' />
@@ -629,7 +629,7 @@ export default function Dashboard(props) {
                   delta={{
                     label: 'Last Year',
                     value: '+5%',
-                    valueColor: '#02bc7d',
+                    valueColor: '#9999ff',
                   }}
                 />
                 <GiCash size={24} color='#9999ff' />
@@ -654,7 +654,7 @@ export default function Dashboard(props) {
                   delta={{
                     label: 'Last Year',
                     value: '+5%',
-                    valueColor: '#02bc7d',
+                    valueColor: '#9999ff',
                   }}
                 />
                 <GiCash size={24} color='#9999ff' />
@@ -679,7 +679,7 @@ export default function Dashboard(props) {
                   delta={{
                     label: 'Last Year',
                     value: '+5%',
-                    valueColor: '#02bc7d',
+                    valueColor: '#9999ff',
                   }}
                 />
                 <GiCash size={24} color='#9999ff' />
@@ -968,7 +968,7 @@ export default function Dashboard(props) {
                     onChange={(e) => setSelectedStatus(e.target.value)}
                   >
                     <option key="all" value="all">
-                      Tous les objectifs mensuels
+                      Tous les faits marquants
                     </option>
                     {statusList.map((option, index) => (
                       <option key={index} value={option.name}>

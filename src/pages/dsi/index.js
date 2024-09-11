@@ -324,7 +324,7 @@ export default function DsiPage(props) {
           <PageTitle
             titleSize={17}
             titleColor={'black'}
-            subtitleColor={'gray'}
+            subtitleColor={'#404245'}
             subtitleSize={14}
             icon={dsi.icon}
             title={dsi.label}

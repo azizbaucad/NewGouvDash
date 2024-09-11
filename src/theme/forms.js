@@ -16,9 +16,18 @@ module.exports = {
             password: true,
             secureTextEntry: true,
           },
+          role: {
+            uid: 'role',
+            label: 'Role',
+            placeholder: '',
+          },
           submit: {
             uid: 'authentication',
             submit_message: 'Sign in',
+          },
+          subscribe: {
+            uid: 'subscribe',
+            submit_message: 'S\'inscrire',
           },
         },
       },
@@ -72,9 +81,104 @@ module.exports = {
         },
         ibouValue: {
           uid: 'ibouValue',
-          label: 'Ibou',
+          label: 'Nom du projet',
           placeholder: '',
         },
+        projetValue: {
+          uid: 'projetValue',
+          label: 'nom du projet',
+          placeholder: '',
+        },
+        currentYearValue: {
+          uid: 'currentYearValue',
+          label: 'Année en cours',
+          placeholder: '',
+        },
+        associatedMinisterValue: {
+          uid: 'associatedMinisterValue',
+          label: 'Ministeres associes',
+          placeholder: '',
+        },
+        ownerMinisterValue: {
+          uid: 'ownerMinisterValue',
+          label: 'Responsable',
+          placeholder: '',
+        },
+        dateMettingValue: {
+          uid: 'dateMettingValue',
+          label: 'Date de rencontre',
+          placeholder: '',
+        },
+        codeMettingValue: {
+          uid: 'codeMettingValue',
+          label: 'Code de rencontre',
+          placeholder: '',
+        },
+        typeMettingValue: {
+          uid: 'typeMettingValue',
+          label: 'Type de rencontre',
+          placeholder: '',
+        },
+        mettingValue: {
+          uid: 'mettingValue',
+          labelArea: 'Rencontre',
+          placeholder: '',
+        },
+        codeDirectiveValue: {
+          uid: 'codeDirectiveValue',
+          label: 'Code de directive',
+          placeholder: '',
+        },
+        typeDirectiveValue: {
+          uid: 'typeDirectiveValue',
+          label: 'Type de directive',
+          placeholder: '',
+        },
+        directiveValue: {
+          uid: 'directiveValue',
+          labelArea: 'Directive',
+          placeholder: '',
+        },
+        startRealDateValue: {
+          uid: 'startRealDateValue',
+          label: 'Date de debut reelle',
+          placeholder: '',
+        },
+        endRealDateValue: {
+          uid: 'endRealDateValue',
+          label: 'Date de fin reelle',
+          placeholder: '',
+        },
+        limitDateValue: {
+          uid: 'limitDateValue',
+          label: 'Date limite',
+          placeholder: '',
+        },
+        previousLimitDateValue: {
+          uid: 'previousLimitDateValue',
+          label: 'Date limite prevue',
+          placeholder: 'mm/dd/yy',
+        },
+        stateValue: {
+          uid: 'stateValue',
+          label: 'Etat d\'avancement',
+          placeholder: '',
+        },
+        budgetProject: {
+          uid: 'budgetProject',
+          label: 'budget',
+          placeholder: '',
+        },
+        dureeProject: {
+          uid: 'dureeProject',
+          label: 'durée',
+          placeholder: '',
+        },
+        ownerProject: {
+          uid: 'ownerProject',
+          label: 'responsable projet',
+          placeholder: '',
+        }, 
         orangeMoneyValue: {
           uid: 'orangeMoneyValue',
           label: 'Orange Money',

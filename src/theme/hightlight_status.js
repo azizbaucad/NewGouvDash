@@ -30,7 +30,7 @@ module.exports = {
         bgColor: hexToRgba('#9999ff', 0.05),
       },
       icon: <MdDoNotDisturbOn color='#cd3c14' size={24} />,
-      label: 'Difficultés',
+      label: 'En attente',
     },
     challenges: {
       name: 'challenges',

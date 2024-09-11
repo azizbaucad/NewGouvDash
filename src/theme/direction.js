@@ -41,6 +41,12 @@ module.exports = {
       description: 'Direction Vente',
       icon: <RiShakeHandsFill fontSize={24} color="white" />,
     },
+    compte: {
+      id: 3500,
+      label: 'COMPTE',
+      description: 'Direction Vente',
+      icon: <RiShakeHandsFill fontSize={24} color="white" />,
+    },
     dde: {
       id: 4300,
       label: 'DDE',

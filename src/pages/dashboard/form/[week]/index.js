@@ -1,15 +1,26 @@
-import { Box, Divider, Flex, HStack, Stack, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Divider,
+  Flex,
+  HStack,
+  Stack,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import { DashboardLayout } from '@components/layout/dashboard';
-import { direction, gird } from '@theme';
+import { colors, direction, gird } from '@theme';
 import { getToken } from 'next-auth/jwt';
 import { PageTitle } from '@components/common/title/page';
 import { ButtonBack } from '@components/common/button';
-import { DescForm } from '@components/forms/desc';
+import { DescForm, DescPlanForm } from '@components/forms/desc';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { getElement } from 'pages/api/global';
 import { getLastWeekList } from '@utils/services/date';
 import { AiFillHome } from 'react-icons/ai';
+import { TiCloudStorage, TiCloudStorageOutline } from 'react-icons/ti';
+
 export default function DescFormPage(props) {
   const router = useRouter();
   const [descData, setDescData] = useState();
@@ -21,6 +32,18 @@ export default function DescFormPage(props) {
 
   const weekOption = getLastWeekList().map((date) => {
     return { value: date.week + '-' + date.year, name: date.week };
+  });
+
+  const statusList = ['En cours', 'En attente'];
+
+  const currentYearList = ['2024', '2025', '2026', '2027', '2028'];
+
+  const statusOption = statusList.map((status) => {
+    return { value: status.toLowerCase().replace(' ', '_'), name: status };
+  });
+
+  const currentYearOption = currentYearList.map((year) => {
+    return { value: year, name: year };
   });
 
   const getDescDataByWeek = () => {
@@ -44,39 +67,21 @@ export default function DescFormPage(props) {
 
   return (
     <DashboardLayout activeMenu={'account-home'}>
-      <Flex mt={10} px={2} w={'100%'} mb={0}>
-        <Box>
-          <PageTitle
-            titleSize={17}
-            titleColor={'black'}
-            subtitleColor={'gray'}
-            subtitleSize={14}
-            icon={<AiFillHome fontSize={24} color="white" />}
-            title={'Présidence'}
-            subtitle={'/ Dashboard Section SGPR'}
-          />
-        </Box>
-      </Flex>
-
       <Stack
-      mt={6}
+        mt={1}
         w={'100%'}
-        mb={3}
-        bg={gstyle.bg}
-        p={gstyle.p}
-        borderRadius={gstyle.radius}
+        bg="#cbd5e1"
+        p={1}
+        borderColor="#bfbfbf"
+        h={'calc(100vh - 80px)'}
+        borderRadius={gstyle.radiusform}
       >
-        <HStack>
-          <ButtonBack color="gray" />
-          <Text as="b">Formulaires de mise-à-jour des KPIs SGPR</Text>
-        </HStack>
-        <Divider />
-
-        <Stack alignItems="start" px={3}>
+        <Stack alignItems={'start'} px={3} mt={10}>
           <DescForm
             descForm={descData}
             directionId={desc.id}
-            weekOption={weekOption}
+            currentYearOption={currentYearOption}
+            statusOption={statusOption}
             selectedWeek={selectedWeek}
             setSelectedWeek={setSelectedWeek}
           />

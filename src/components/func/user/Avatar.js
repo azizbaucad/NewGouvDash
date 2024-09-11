@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Box,
   Popover,
   PopoverArrow,
@@ -14,7 +15,7 @@ import { colors, images, routes } from '@theme';
 import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import router from 'next/router';
-
+import imgtest from '../../../../public/auth/logo.png';
 export const AvatarMenu = () => {
   const { isOpen, onToggle, onClose } = useDisclosure();
   const { data: session } = useSession();
@@ -24,7 +25,7 @@ export const AvatarMenu = () => {
     : session?.user?.name?.full;
 
   return (
-    <Box cursor={'pointer'} h={49} w={49} pos={'relative'} onClick={onToggle}>
+    <Box cursor={'pointer'} h={39} w={39} pos={'relative'} onClick={onToggle}>
       <Popover
         returnFocusOnClose
         isOpen={isOpen}
@@ -33,7 +34,8 @@ export const AvatarMenu = () => {
         closeOnBlur={false}
       >
         <PopoverTrigger>
-          <Image alt={'avatar'} {...images.avatar} fill />
+          <Image size="sm" alt={'avatar'} {...images.avatar} fill />
+          {/* <Avatar size="sm" name="User Name" src="../../../../public/auth/logo.png" /> */}
         </PopoverTrigger>
         <PopoverContent>
           <PopoverHeader fontWeight={'semibold'}>{displayName}</PopoverHeader>

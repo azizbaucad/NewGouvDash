@@ -140,11 +140,9 @@ const options = {
 };
 
 const simulatedData = {
-  caRechargeArrayData: ['30-24', '31-24', '32-24', '33-24', '34-24', '35-24', '36-24', '37-24'],
-  dataSetCa: [100, 105, 102, 110, 115, 120, 125, 130],
-  dataSetObj: [110, 108, 107, 115, 120, 125, 130, 135], // Objectifs proches des valeurs réelles
-  labelNameCa: 'Projets réqlisés',
-  labelNameObj: 'Objectifs',
+  caRechargeArrayData: ['Jan', 'Fev', 'Mars', 'Avr', 'Mai', 'Juin', 'Juillet', 'Aout'],
+  dataSetCa: [730000000000, 630000000000, 530000000000, 430000000000, 330000000000, 230000000000, 130000000000, 30000000000],// Objectifs proches des valeurs réelles
+  labelNameCa: 'Budget consommé',
 };
 
 
@@ -152,7 +150,6 @@ export const LineChartsParcOM = () => {
   const [caRechargeChartData, setCaRechargeChartData] = useState({
     caRechargeArrayData: [],
     dataSetCa: [],
-    dataSetObj: [],
   });
 
   useEffect(() => {
@@ -160,7 +157,6 @@ export const LineChartsParcOM = () => {
     const newCaRechargeChartData = {
       caRechargeArrayData: simulatedData.caRechargeArrayData,
       dataSetCa: simulatedData.dataSetCa,
-      dataSetObj: simulatedData.dataSetObj,
     };
     setCaRechargeChartData(newCaRechargeChartData);
   }, []);
@@ -170,18 +166,11 @@ export const LineChartsParcOM = () => {
     labels: caRechargeChartData.caRechargeArrayData,
     datasets: [
       {
-        label: 'Projets Réalisés',
+        label: 'Budget consommé',
         data: caRechargeChartData.dataSetCa,
         fill: false,
-        backgroundColor: '#34c997',
-        borderColor: '#34c997',
-      },
-      {
-        label: 'Objectifs',
-        data: caRechargeChartData.dataSetObj,
-        fill: false,
-        backgroundColor: '#adadff',
-        borderColor: '#adadff',
+        backgroundColor: '#991b1b',
+        borderColor: '#991b1b',
       },
     ],
   };

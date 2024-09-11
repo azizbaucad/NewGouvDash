@@ -127,7 +127,7 @@ export default function DcirePage(props) {
           <PageTitle
             titleSize={17}
             titleColor={'black'}
-            subtitleColor={'gray'}
+            subtitleColor={'#404245'}
             subtitleSize={14}
             icon={dcire.icon}
             title={dcire.label}

@@ -429,7 +429,7 @@ export default function DrjPage(props) {
           <PageTitle
             titleSize={17}
             titleColor={'black'}
-            subtitleColor={'gray'}
+            subtitleColor={'#404245'}
             subtitleSize={14}
             icon={drj.icon}
             title={drj.label}

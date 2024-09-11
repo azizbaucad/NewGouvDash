@@ -140,7 +140,7 @@ export default function DrhPage(props) {
           <PageTitle
             titleSize={17}
             titleColor={'black'}
-            subtitleColor={'gray'}
+            subtitleColor={'#404245'}
             subtitleSize={14}
             icon={drh.icon}
             title={drh.label}

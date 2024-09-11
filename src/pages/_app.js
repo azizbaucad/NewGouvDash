@@ -29,27 +29,10 @@ const breakpoints = {
 
 const theme = extendTheme({ colors, breakpoints, colorSchemes });
 
-// 3. Pass the `theme` prop to the `ChakraProvider`
 function DeveloperConsole({ Component, pageProps: { session, ...pageProps } }) {
   const [loading, setLoading] = useState(false);
   const [authorizedLoader, setAuthorizeLoading] = useState(false);
   const router = useRouter();
-
-  /*useEffect(() => {
-    setAuthorizeLoading(router.pathname.includes('dashboard'));
-    const startLoading = () => setLoading(true);
-    const stopLoading = () => setLoading(false);
-
-    router.events.on('routeChangeStart', startLoading);
-    router.events.on('routeChangeComplete', stopLoading);
-    router.events.on('routeChangeError', stopLoading);
-
-    return () => {
-      router.events.off('routeChangeStart', startLoading);
-      router.events.off('routeChangeComplete', stopLoading);
-      router.events.off('routeChangeError', stopLoading);
-    };
-  }, []);*/
 
   return (
     <SessionProvider session={session}>

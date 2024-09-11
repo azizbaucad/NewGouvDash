@@ -1,4 +1,4 @@
-import { LoginForm } from '@components/forms/login';
+import { LoginForm, ToglleComponent } from '@components/forms/login';
 import {
   AuthenticationLayout,
   AuthenticationLayoutForm,
@@ -22,7 +22,7 @@ export default function Login() {
           specifics,
         }}
       >
-        <LoginForm />
+        <ToglleComponent />
       </AuthenticationLayoutForm>
     </AuthenticationLayout>
   );

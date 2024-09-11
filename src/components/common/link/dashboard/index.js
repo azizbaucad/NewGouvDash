@@ -1,4 +1,4 @@
-import { Heading, HStack, VStack } from '@chakra-ui/react';
+import { Box, Heading, HStack, VStack } from '@chakra-ui/react';
 import { colors } from '@theme';
 import router from 'next/router';
 
@@ -15,9 +15,9 @@ export const DashboardLink = ({
     ? {
         color: colorMenu || colors.primary.black, // Utilisation de colorMenu
         _hover: { cursor: cursor || 'default' }, // Utilisation de la prop cursor
-        border: '1px solid #e6e9ef', // Bordure grise claire
-        backgroundColor: '#e6e9ef', // Couleur de fond pour les éléments actifs
-        padding: '8px 10px', // Espacement intérieur
+        border: '1px solid #cfd1d7', // Bordure grise claire
+        backgroundColor: '#cbd5e1', // Couleur de fond pour les éléments actifs
+        padding: '2px 4px', // Espacement intérieur
       }
     : {
         _hover: {
@@ -25,7 +25,7 @@ export const DashboardLink = ({
           color: colorMenu || colors.primary.blackQuick, // Utilisation de colorMenu
         },
         color: colorMenu || colors.primary.blackQuick, // Couleur principale noire rapide
-        padding: '8px 10px', // Espacement intérieur
+        padding: '2px 4px', // Espacement intérieur
       };
 
   return (
@@ -46,13 +46,21 @@ export const DashboardLink = ({
             onClick: () => router.push(redirectOn),
           })}
     >
-      {icon}
-      <Heading alignItems={'start'} fontFamily="'Roboto Mono', sans-serif" fontSize={14} fontWeight={500} pl={0} pr={0}>
+      <Box mb={1}>{icon}</Box>
+
+      <Heading
+        alignItems={'start'}
+        fontFamily="'Roboto Mono', sans-serif"
+        w={'100%'}
+        fontSize={12.5}
+        fontWeight={500}
+        pl={0}
+        pr={0}
+        mb={1}
+        mt={1}
+      >
         {message}
       </Heading>
     </HStack>
   );
 };
-
-
-

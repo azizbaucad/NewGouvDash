@@ -2,13 +2,12 @@ import { HStack, Text, Box, Heading, Circle } from '@chakra-ui/react';
 import { BsFillStopFill } from 'react-icons/bs';
 import { RowTexts, truncate } from '@components/common/text';
 import { Fragment, useState } from 'react';
+import { TagTitle } from '@components/common/title';
 
 export const HightlightHeader = ({ status }) => {
   return (
     <HStack alignItems={'left'} justifyContent={'space-between'}>
-      <Heading fontSize={16} color={'#000'} fontWeight={'800'} as={'text'} fontFamily="'Roboto Mono, sans-serif'">
-        Objectifs Mensuels
-      </Heading>
+      <TagTitle title={'Faits marquants'} size={16} />
       <HStack spacing={1}>
         {status.map((statusItem, i) => (
           <HightlightStatus
@@ -40,6 +39,7 @@ export const HightlightStatus = ({
         fontSize={fontSizeText}
         fontWeight={fontWeightText}
         color={colorText}
+        fontFamily="'Roboto mono', sans-serif"
       >
         {textStatus}
       </Text>

@@ -85,7 +85,7 @@ export function DvDataModal(props) {
               <PageTitle
                 titleSize={17}
                 titleColor={'black'}
-                subtitleColor={'gray'}
+                subtitleColor={'#404245'}
                 subtitleSize={15}
                 icon={direction.icon}
                 title={direction.label}

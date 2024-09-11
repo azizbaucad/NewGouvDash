@@ -127,7 +127,7 @@ export default function DfcPage(props) {
           <PageTitle
             titleSize={17}
             titleColor={'black'}
-            subtitleColor={'gray'}
+            subtitleColor={'#404245'}
             subtitleSize={14}
             icon={dfc.icon}
             title={dfc.label}

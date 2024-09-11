@@ -31,8 +31,8 @@ export const options2 = {
   layout: {
     padding: {
       left: 0,
-      right: 0,
-      top: 10,
+      right: 30,
+      top: 0,
       bottom: 0,
     },
   },
@@ -53,7 +53,7 @@ export const options2 = {
       display: false,
     },
     title: {
-      display: true,
+      display: false,
       text: 'Pourcentage indice BES',
       padding: {
         top: 0,

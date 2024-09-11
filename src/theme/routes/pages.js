@@ -8,6 +8,36 @@ module.exports = {
     dashboard: {
       initial: '/dashboard',
     },
+    programme: {
+      initial: '/programme',
+    },
+    plan: {
+      initial: '/plan',
+    },
+    directive: {
+      initial: '/directive',
+    },
+    projet: {
+      initial: '/projet',
+    },
+    action: {
+      initial: '/action',
+    },
+    compte: {
+      initial: '/compte',
+    },
+    institution: {
+      initial: '/institution',
+    },
+    structure: {
+      initial: '/structure',
+    },
+    activite: {
+      initial: '/activite',
+    },
+    equipe: {
+      initial: '/equipe',
+    },
     dmgp: {
       initial: '/dmgp',
     },
