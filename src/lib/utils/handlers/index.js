@@ -23,10 +23,10 @@ export const loginFormHandler = async ({ data, setSubmitting, setFieldError }) =
   const { identifier, password } = data;
 
   // Bypass de l'authentification réelle
-  if (identifier === 'test' && password === 'test') {
+  if (identifier === 'test001' && password === 'test001') {
     // Stocker un faux token ou définir l'état comme connecté
     localStorage.setItem('fakeAuthToken', 'fakeToken123');
-    window.location.href = '/dashboard'; // Rediriger vers le tableau de bord
+    window.location.href = '/'; // Rediriger vers le tableau de bord /dashboard
   } else {
     setFieldError('identifier', 'Identifiant ou mot de passe incorrect');
   }
