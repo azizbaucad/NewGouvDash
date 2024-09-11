@@ -50,15 +50,15 @@ export const Sidebar = ({ activeLink }) => {
       ],
     },
     {
-      name: 'Pole administration',
+      name: 'BO du Dashboard',
       icon: <MdOutlineAdminPanelSettings fontSize={20} color="#1e293b" mt={1} />,
       active: 'null',
       url: routes.pages.dmgp.initial,
       subMenus: [
         { name: 'Comptes', active: 'compte', url: routes.pages.compte.initial },
-        { name: 'Institution', active: 'institution', url: routes.pages.institution.initial },
-        { name: 'Structure', active: 'structure', url: routes.pages.structure.initial },
-        { name: 'Activité', active: 'activite', url: routes.pages.activite.initial },
+/*         { name: 'Institution', active: 'institution', url: routes.pages.institution.initial },
+        { name: 'Structure', active: 'structure', url: routes.pages.structure.initial }, */
+       /*  { name: 'Activité', active: 'activite', url: routes.pages.activite.initial }, */
         { name: 'Equipe', active: 'equipe', url: routes.pages.equipe.initial },
       ],
     },
@@ -112,9 +112,9 @@ export const Sidebar = ({ activeLink }) => {
                     </VStack>
                   )}
                 </Box>
-                {/* {(i === 1) && (
-                  <Divider borderColor={'gray.400'} mt={5} mb={5} w={'100%'} />
-                )} */}
+                {(i === 1) && (
+                  <Divider borderColor={'gray.400'} mt={7} mb={7 } w={'100%'} />
+                )}
               </>
             ))}
           </VStack>

@@ -1252,6 +1252,7 @@ export const InstitutionForm = (props) => {
           <form onSubmit={handleSubmit}>
             {/* Nom de l'institution */}
             <VStack align="start">
+              
               <HStack w={'100%'} spacing={4} mb={2}>
                 <FormControl
                   isInvalid={errors.institution && touched.institution}
@@ -1473,6 +1474,36 @@ export const EquipeForm = (props) => {
           <form onSubmit={handleSubmit}>
             {/* Nom de l'équipe */}
             <VStack align="start">
+            <HStack w={'100%'} spacing={4}>
+                <FormControl
+                  isInvalid={errors.institution && touched.institution}
+                >
+                  <FormLabel fontSize={12}>Institution</FormLabel>
+                  <Select
+                    name=""
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.institution}
+                  >
+                    <option value="" label="Sélectionnez une institution" />
+                    <option value="Presidence" label="Présidence" />
+                    <option value="Primture" label="Primature" />
+                  </Select>
+                </FormControl>
+                <FormControl isInvalid={errors.structure && touched.structure}>
+                  <FormLabel fontSize={12}>Structure</FormLabel>
+                  <Select
+                    name="structure"
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    value={values.structure}
+                  >
+                    <option value="" label="Sélectionnez une structure" />
+                    <option value="IGE" label="IGE" />
+                    <option value="ITIE" label="ITIE" />
+                  </Select>
+                </FormControl>
+              </HStack>
               <HStack w={'100%'} spacing={4} mb={2}>
                 <FormControl isInvalid={errors.teamName && touched.teamName}>
                   <FormLabel fontSize={12}>Nom Équipe</FormLabel>
