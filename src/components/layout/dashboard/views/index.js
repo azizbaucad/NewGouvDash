@@ -25,7 +25,7 @@ import { scroll_customize } from '@components/common/styleprops';
     <Box w="100%" bg="#f1f5f9" position="sticky" p={4}>
       <HStack w="100%" spacing={4} alignItems="center">
         {/* Left-aligned: Navigation Path */}
-        <Text fontSize="md" color="gray.800" fontFamily="'Roboto mono', sans-serif">Personal / aziz</Text>
+        <Text fontSize="md" color="gray.800" fontFamily="'Roboto mono', sans-serif">Personal / user connected</Text>
 
         <Spacer /> {/* Pushes the right section to the far right */}
 
