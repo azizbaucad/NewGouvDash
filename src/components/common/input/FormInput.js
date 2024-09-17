@@ -246,23 +246,6 @@ export const FormSubmit = ({
         bgColor={bgColor || colors.primary.regular_green_orange}
         w={'100%'}
         type={'submit'}
-        isDisabled={isSubmitting}
-        isLoading={isSubmitting}
-        loadingText={forms.inputs.loadingText}
-        disabled
-        fontFamily="'Roboto mono', sans-serif"
-              _hover={{
-                bgColor: '#9999ff', // Le hover reste la même couleur pour un effet "désactivé"
-                cursor: 'not-allowed', // Changer le curseur pour indiquer que le bouton est désactivé
-              }}
-              _disabled={{
-                bgColor: '#9999ff', // Conserver la couleur de fond pour le bouton désactivé
-                color: 'white', // Garder la couleur du texte
-                cursor: 'not-allowed', // Ajouter un curseur désactivé
-                _hover: {
-                  bgColor: '#9999ff', // Aucune modification de couleur au hover
-                },
-              }}
       >
         {submit_message}
       </Button>

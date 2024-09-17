@@ -26,7 +26,7 @@ export const loginFormHandler = async ({ data, setSubmitting, setFieldError }) =
   if (identifier === 'test001' && password === 'test001') {
     // Stocker un faux token ou définir l'état comme connecté
     localStorage.setItem('fakeAuthToken', 'fakeToken123');
-    window.location.href = '/'; // Rediriger vers le tableau de bord /dashboard
+    window.location.href = '/dashboard'; // Rediriger vers le tableau de bord /dashboard
   } else {
     setFieldError('identifier', 'Identifiant ou mot de passe incorrect');
   }

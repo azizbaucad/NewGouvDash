@@ -1,23 +1,13 @@
 import {
-  Box,
   Button,
-  Checkbox,
   Divider,
-  FormControl,
-  FormLabel,
-  Heading,
   HStack,
-  Input,
-  Radio,
-  RadioGroup,
   Stack,
-  Textarea,
+  Text,
   VStack,
   useToast,
 } from '@chakra-ui/react';
-import { ButtonBack } from '@components/common/button';
 import { FormInput, FormSubmit } from '@components/common/input/FormInput';
-import { PageTitle } from '@components/common/title/page';
 import { descSchema } from '@schemas';
 import { forms, routes } from '@theme';
 import { descFormHandler } from '@utils/handlers';
@@ -25,7 +15,6 @@ import { mapFormInitialValues } from '@utils/tools/mappers';
 import { Formik } from 'formik';
 import { useRouter } from 'next/router';
 import { Fragment } from 'react';
-import { AiFillHome } from 'react-icons/ai';
 import { FiArrowRight } from 'react-icons/fi';
 
 export const DescForm = (props) => {
@@ -60,64 +49,27 @@ export const DescForm = (props) => {
   const valuesInitial = props.descForm ?? null;
   const toast = useToast();
 
-  return <ContactForm />;
-};
-
-export const ContactForm = (props) => {
-  const router = useRouter();
-
-  const goBack = () => router.back();
-  const {
-    descForm: {
-      week,
-      structureValue,
-      projetValue,
-      currentYearValue,
-      associatedMinisterValue,
-      ownerMinisterValue,
-      dateMettingValue,
-      codeMettingValue,
-      typeMettingValue,
-      mettingValue,
-      codeDirectiveValue,
-      typeDirectiveValue,
-      directiveValue,
-      startRealDateValue,
-      endRealDateValue,
-      limitDateValue,
-      previousLimitDateValue,
-      stateValue,
-      evitementSelfcareValue,
-      submit,
-    },
-  } = forms.inputs;
-
-  const valuesInitial = props.descForm ?? null;
-  const toast = useToast();
   return (
-    <Box maxW="100%" mx="auto" p={8} bg="#f1f5f9" borderRadius="lg">
-      <HStack>
-        <Box mt={2}>
-          <ButtonBack color="gray" />
-        </Box>
-        <Box ml={1}>
-          <PageTitle
-            titleSize={16}
-            titleColor={'black'}
-            subtitleColor={'gray'}
-            subtitleSize={16}
-            icon={<AiFillHome size={26} color="#9999ff" />}
-            subtitle={'Renseigner un projet'}
-          />
-        </Box>
-      </HStack>
-      <Divider mt={3} mb={5} />
-
+    <VStack w={'100%'} alignItems="start">
       <Formik
-        initialValues={props.initialValues ?? {}}
-        validationSchema={props.validationSchema}
+        alignItems="start"
+        enableReinitialize={true}
+        initialValues={valuesInitial ?? mapFormInitialValues(descSchema._nodes)}
+        validationSchema={descSchema}
         onSubmit={(values, { setSubmitting, setFieldError }) => {
-          props.onSubmit(values, setSubmitting, setFieldError);
+          descFormHandler({
+            directionId: props.directionId,
+            descId: valuesInitial?.id ?? null,
+            data: values,
+            setSubmitting,
+            closeModal: props.onClose,
+            //getHightlight: props.getHightlight,
+            week: props.selectedWeek,
+            toast: toast,
+            setFieldError,
+            goBack,
+            redirectOnSuccess: routes.pages.dashboard.initial,
+          });
         }}
       >
         {({
@@ -129,106 +81,281 @@ export const ContactForm = (props) => {
           handleSubmit,
           isSubmitting,
         }) => (
-          <form onSubmit={handleSubmit}>
-            {/* First Name & Last Name */}
-            <HStack spacing={4} mb={4}>
-              <FormControl isInvalid={errors.firstName && touched.firstName}>
-                <FormLabel>First Name</FormLabel>
-                <Input
-                  type="text"
-                  name="firstName"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.firstName}
-                />
-              </FormControl>
+          <Fragment>
+            <Text
+              fontSize={'16px'}
+              fontFamily="'Roboto mono', sans-serif"
+              fontWeight={'550'}
+              mt={2}
+            >
+              {' '}
+              Team projet{' '}
+            </Text>
+            <Divider />
 
-              <FormControl isInvalid={errors.lastName && touched.lastName}>
-                <FormLabel>Last Name</FormLabel>
-                <Input
-                  type="text"
-                  name="lastName"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.lastName}
-                />
-              </FormControl>
-              <FormControl isInvalid={errors.lastName && touched.lastName}>
-                <FormLabel>Last Name</FormLabel>
-                <Input
-                  type="text"
-                  name="lastName"
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  value={values.lastName}
-                />
-              </FormControl>
+            <HStack w={'100%'} gap={2} alignContent="start" h={'3.5rem'} mb={2}>
+              <FormInput
+                py={1}
+                select={true}
+                options={props.currentYearOption}
+                {...currentYearValue}
+                {...{
+                  errors,
+                  handleChange,
+                  handleBlur,
+                  touched,
+                  values,
+                }}
+              />
+
+              <FormInput
+                py={1}
+                type="text"
+                {...associatedMinisterValue}
+                {...{
+                  errors,
+                  handleChange,
+                  handleBlur,
+                  touched,
+                  values,
+                }}
+              />
+
+              <FormInput
+                py={1}
+                type="text"
+                {...ownerMinisterValue}
+                {...{
+                  errors,
+                  handleChange,
+                  handleBlur,
+                  touched,
+                  values,
+                }}
+              />
+            </HStack>
+            {/* <Divider mt={0} mb={0} color={''} /> */}
+            <Text
+              fontSize={'16px'}
+              fontFamily="'Roboto mono', sans-serif"
+              fontWeight={'550'}
+              mt={2}
+            >
+              {' '}
+              Rencontre{' '}
+            </Text>
+            <Divider />
+
+            <HStack w={'100%'} gap={2} alignContent="start" h={'3.5rem'} mb={2}>
+              <FormInput
+                py={1}
+                type="date"
+                {...dateMettingValue}
+                {...{
+                  errors,
+                  handleChange,
+                  handleBlur,
+                  touched,
+                  values,
+                }}
+              />
+
+              <FormInput
+                py={1}
+                type="text"
+                {...codeMettingValue}
+                {...{
+                  errors,
+                  handleChange,
+                  handleBlur,
+                  touched,
+                  values,
+                }}
+              />
+
+              <FormInput
+                py={1}
+                type="text"
+                {...typeMettingValue}
+                {...{
+                  errors,
+                  handleChange,
+                  handleBlur,
+                  touched,
+                  values,
+                }}
+              />
+
+              <FormInput
+                py={1}
+                textArea={true}
+                {...mettingValue}
+                {...{
+                  errors,
+                  handleChange,
+                  handleBlur,
+                  touched,
+                  values,
+                }}
+              />
             </HStack>
 
-            {/* Email Address */}
-            <FormControl mb={4} isInvalid={errors.email && touched.email}>
-              <FormLabel>Email Address</FormLabel>
-              <Input
-                type="email"
-                name="email"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.email}
-              />
-            </FormControl>
-
-            {/* Query Type */}
-            <FormControl as="fieldset" mb={4}>
-              <FormLabel as="legend">Query Type</FormLabel>
-              <RadioGroup
-                name="queryType"
-                onChange={handleChange}
-                value={values.queryType}
-              >
-                <Stack direction="row">
-                  <Radio value="General Enquiry">General Enquiry</Radio>
-                  <Radio value="Support Request">Support Request</Radio>
-                </Stack>
-              </RadioGroup>
-            </FormControl>
-
-            {/* Message */}
-            <FormControl mb={4} isInvalid={errors.message && touched.message}>
-              <FormLabel>Message</FormLabel>
-              <Textarea
-                name="message"
-                onChange={handleChange}
-                onBlur={handleBlur}
-                value={values.message}
-              />
-            </FormControl>
-
-            {/* Consent Checkbox */}
-            <FormControl mb={6}>
-              <Checkbox
-                name="consent"
-                onChange={handleChange}
-                onBlur={handleBlur}
-              >
-                I consent to being contacted by the team
-              </Checkbox>
-            </FormControl>
-
-            <Divider mb={4} />
-
-            {/* Submit Button */}
-            <Button
-              type="submit"
-              colorScheme="green"
-              size="lg"
-              isFullWidth
-              isLoading={isSubmitting}
+            <Text
+              fontSize={'16px'}
+              fontFamily="'Roboto mono', sans-serif"
+              fontWeight={'550'}
+              mt={2}
             >
-              Submit
-            </Button>
-          </form>
+              {' '}
+              Directive{' '}
+            </Text>
+            <Divider />
+
+            <HStack w={'100%'} gap={2} alignContent="start" h={'3.5rem'} mb={2}>
+              <FormInput
+                py={0}
+                type="text"
+                {...codeDirectiveValue}
+                {...{
+                  errors,
+                  handleChange,
+                  handleBlur,
+                  touched,
+                  values,
+                }}
+              />
+
+              <FormInput
+                py={1}
+                type="text"
+                {...typeDirectiveValue}
+                {...{
+                  errors,
+                  handleChange,
+                  handleBlur,
+                  touched,
+                  values,
+                }}
+              />
+
+              <FormInput
+                py={1}
+                textArea={true}
+                {...directiveValue}
+                {...{
+                  errors,
+                  handleChange,
+                  handleBlur,
+                  touched,
+                  values,
+                }}
+              />
+            </HStack>
+
+            <Text
+              fontSize={'16px'}
+              fontFamily="'Roboto mono', sans-serif"
+              fontWeight={'550'}
+              mt={2}
+            >
+              {' '}
+              Détails directives{' '}
+            </Text>
+            <Divider />
+
+            <HStack w={'100%'} gap={2} alignContent="start" h={'3.5rem'} mb={2}>
+              <FormInput
+                py={1}
+                type="date"
+                {...startRealDateValue}
+                {...{
+                  errors,
+                  handleChange,
+                  handleBlur,
+                  touched,
+                  values,
+                }}
+              />
+
+              <FormInput
+                py={1}
+                type="date"
+                {...endRealDateValue}
+                {...{
+                  errors,
+                  handleChange,
+                  handleBlur,
+                  touched,
+                  values,
+                }}
+              />
+
+              <FormInput
+                py={1}
+                type="date"
+                {...limitDateValue}
+                {...{
+                  errors,
+                  handleChange,
+                  handleBlur,
+                  touched,
+                  values,
+                }}
+              />
+
+              <FormInput
+                py={1}
+                type="date"
+                {...previousLimitDateValue}
+                {...{
+                  errors,
+                  handleChange,
+                  handleBlur,
+                  touched,
+                  values,
+                }}
+              />
+
+              <FormInput
+                py={1}
+                select={true}
+                options={props.statusOption}
+                {...stateValue}
+                {...{
+                  errors,
+                  handleChange,
+                  handleBlur,
+                  touched,
+                  values,
+                }}
+              />
+            </HStack>
+
+            <HStack w={'100%'} gap={2} py={10}>
+              <Button
+                onClick={goBack}
+                bgColor="white"
+                w={'50%'}
+                h={'2.3rem'}
+                border="1px"
+                borderColor="gray.200"
+              >
+                Annuler
+              </Button>
+              <FormSubmit
+                {...{
+                  touched,
+                  errors,
+                  handleSubmit,
+                  isSubmitting,
+                }}
+                {...submit}
+                /* rightIcon={<FiArrowRight size={'1.5rem'} />} */
+              />
+            </HStack>
+          </Fragment>
         )}
       </Formik>
-    </Box>
+    </VStack>
   );
 };
